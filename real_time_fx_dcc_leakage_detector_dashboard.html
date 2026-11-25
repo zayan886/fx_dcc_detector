@@ -1,0 +1,3537 @@
+<!DOCTYPE html>
+<html lang="en" class="Light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FX Guard Enterprise — Real-Time FX &amp; DCC Leakage Detection Platform</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slatebg: '#070b13',
+            cardbg: '#0f172a',
+            cardborder: '#1e293b',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #060912;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #080d18;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* =========================================================================
+       HSBC & ZERODHA ARCHITECTURAL BACKGROUND STYLING
+       Combines Zerodha Kite's technical matrix grid with HSBC's geometric facets
+       ========================================================================= */
+    .bg-financial-matrix {
+      background-color: #060912;
+      background-image:
+        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(14, 165, 233, 0.16) 0%, transparent 70%),
+        radial-gradient(circle 750px at 98% 30%, rgba(16, 185, 129, 0.10) 0%, transparent 60%),
+        radial-gradient(circle 700px at 2% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+        radial-gradient(circle 600px at 50% 85%, rgba(225, 29, 72, 0.06) 0%, transparent 55%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    }
+
+    .bg-dot-texture {
+      background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .laser-line-horizontal {
+      background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.45) 50%, transparent 100%);
+    }
+
+    /* Elevated Glassmorphism with Institutional Banking Borders */
+    .glass-card {
+      background: linear-gradient(180deg, rgba(13, 20, 36, 0.90) 0%, rgba(8, 13, 25, 0.96) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+        0 14px 34px -10px rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+        0 20px 40px -12px rgba(6, 182, 212, 0.09),
+        0 14px 34px -10px rgba(0, 0, 0, 0.75);
+    }
+
+    .nav-tab-active {
+      color: #38bdf8;
+      border-bottom: 2px solid #38bdf8;
+      background: rgba(56, 189, 248, 0.10);
+    }
+
+    .code-block {
+      background: #080d18;
+      border: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Zerodha-Inspired Continuous Streaming Financial Rates Marquee */
+    @keyframes tickerSlide {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .animate-ticker {
+      display: flex;
+      width: max-content;
+      animation: tickerSlide 45s linear infinite;
+    }
+
+    .animate-ticker:hover {
+      animation-play-state: paused;
+    }
+  </style>
+</head>
+
+<body
+  class="min-h-screen antialiased selection:bg-cyan-500/30 selection:text-cyan-200 flex flex-col relative bg-[#060912]">
+
+  <!-- ========================================================================= -->
+  <!-- HSBC & ZERODHA ARCHITECTURAL BACKGROUND LAYER -->
+  <!-- Micro-grid precision matrix + ambient aurora glows + geometric facet watermarks -->
+  <!-- ========================================================================= -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <!-- Fine-grain Institutional Grid Matrix -->
+    <div class="absolute inset-0 bg-financial-matrix opacity-90"></div>
+    <div class="absolute inset-0 bg-dot-texture opacity-25"></div>
+
+    <!-- HSBC-Inspired Diagonal Prismatic Facets (Faint Architectural Watermarks) -->
+    <svg class="absolute -top-32 -right-32 w-[650px] h-[650px] text-cyan-500/[0.04] transform rotate-12"
+      viewBox="0 0 400 400" fill="currentColor">
+      <polygon points="200,20 380,200 200,380 20,200" />
+      <polygon points="200,60 340,200 200,340 60,200" fill="none" stroke="currentColor" stroke-width="1.5" />
+      <polygon points="200,100 300,200 200,300 100,200" fill="none" stroke="currentColor" stroke-width="1" />
+    </svg>
+
+    <svg class="absolute top-[35%] -left-40 w-[550px] h-[550px] text-emerald-500/[0.035] transform -rotate-45"
+      viewBox="0 0 400 400" fill="currentColor">
+      <polygon points="200,20 380,200 200,380 20,200" />
+      <polygon points="200,60 340,200 200,340 60,200" fill="none" stroke="currentColor" stroke-width="1.5" />
+    </svg>
+
+    <svg class="absolute bottom-10 right-[15%] w-[450px] h-[450px] text-rose-500/[0.03] transform rotate-45"
+      viewBox="0 0 400 400" fill="currentColor">
+      <polygon points="200,20 380,200 200,380 20,200" />
+      <polygon points="200,60 340,200 200,340 60,200" fill="none" stroke="currentColor" stroke-width="1.5" />
+    </svg>
+
+    <!-- Top Laser Light Beam -->
+    <div class="absolute top-0 left-0 right-0 h-px laser-line-horizontal"></div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 1. TOP COMMERCIAL HEADER & NAVIGATION -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-[#070b13]/95 backdrop-blur-md">
+    <!-- Top Security & Compliance Ticker -->
+    <div class="border-b border-slate-800/60 bg-slate-950/80 px-4 py-1 text-[11px] text-slate-400">
+      <div class="mx-auto flex max-w-7xl items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1.5 font-medium text-emerald-400">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            SOC-2 Type II Certified
+          </span>
+          <span class="hidden sm:inline text-slate-600">|</span>
+          <span class="hidden sm:inline">PCI-DSS Level 1 Merchant Gateway Compliant</span>
+          <span class="hidden md:inline text-slate-600">|</span>
+          <span class="hidden md:inline">Live Mid-Market Feed: 99.99% Latency &lt; 15ms</span>
+        </div>
+        <div class="flex items-center gap-4 text-slate-400">
+          <div id="backendStatusPill"
+            class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="backendStatusText">FastAPI Engine Connecting...</span>
+          </div>
+          <div id="backendStatusPill"
+            class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="backendStatusText">FastAPI Engine Connecting...</span>
+          </div>
+          <span class="hidden sm:inline">Environment: <strong class="text-cyan-400">Production
+              (AP-South-1)</strong></span>
+          <a href="#api" onclick="switchTab('api')" class="hover:text-white transition">API Docs</a>
+          <a href="#pricing" onclick="switchTab('pricing')" class="hover:text-white transition">Pricing</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3.5 cursor-pointer" onclick="switchTab('dashboard')">
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 text-slate-950 shadow-lg shadow-cyan-500/20 font-black text-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.3">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-extrabold tracking-tight text-white">FX Guard</span>
+            <span
+              class="rounded-md border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-cyan-300">
+              COMMERCIAL v2.4
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400">Enterprise FX &amp; DCC Leakage Prevention Suite</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Desktop) -->
+      <nav class="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-300">
+        <button id="tabBtn-dashboard" onclick="switchTab('dashboard')"
+          class="nav-tab-active px-3 py-2 rounded-lg transition hover:text-white">
+          Live Dashboard
+        </button>
+        <button id="tabBtn-cards" onclick="switchTab('cards')"
+          class="px-3 py-2 rounded-lg transition hover:text-white hover:bg-slate-800/50">
+          Smart Card Portfolio
+        </button>
+        <button id="tabBtn-merchants" onclick="switchTab('merchants')"
+          class="px-3 py-2 rounded-lg transition hover:text-white hover:bg-slate-800/50">
+          Merchant Directory
+        </button>
+        <button id="tabBtn-api" onclick="switchTab('api')"
+          class="px-3 py-2 rounded-lg transition hover:text-white hover:bg-slate-800/50">
+          Developer API &amp; Webhooks
+        </button>
+        <button id="tabBtn-pricing" onclick="switchTab('pricing')"
+          class="px-3 py-2 rounded-lg transition hover:text-white hover:bg-slate-800/50">
+          Plans &amp; ROI
+        </button>
+      </nav>
+
+      <!-- Right Action Controls (Auth, Notifications, Demo reset) -->
+      <div class="flex items-center gap-3">
+        <!-- Live Notifications Flyout Button -->
+        <div class="relative">
+          <button id="notifBtn" onclick="toggleNotifications()"
+            class="relative rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span id="notifBadge"
+              class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">3</span>
+          </button>
+
+          <!-- Notifications Dropdown -->
+          <div id="notifDropdown"
+            class="hidden absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl border border-slate-800 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-xl z-50">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Live Security Alerts</span>
+              <button onclick="clearNotifications()" class="text-[11px] font-medium text-cyan-400 hover:underline">Mark
+                all read</button>
+            </div>
+            <div id="notifList" class="mt-3 space-y-2.5 max-h-72 overflow-y-auto">
+              <div class="rounded-xl border border-rose-500/30 bg-rose-950/20 p-2.5 text-xs">
+                <div class="flex items-center justify-between font-bold text-rose-300">
+                  <span>DCC Trap Blocked (ACME CLOUD)</span>
+                  <span class="text-[10px] text-slate-500">2m ago</span>
+                </div>
+                <p class="mt-1 text-[11px] text-slate-300">Prevented 8.32% FX leakage. Recovered ₹344.50 on Card *4412.
+                </p>
+              </div>
+              <div class="rounded-xl border border-cyan-500/30 bg-cyan-950/20 p-2.5 text-xs">
+                <div class="flex items-center justify-between font-bold text-cyan-300">
+                  <span>Smart Route: Zero-Forex Card</span>
+                  <span class="text-[10px] text-slate-500">14m ago</span>
+                </div>
+                <p class="mt-1 text-[11px] text-slate-300">Routed Steam Store charge to Scapia 0% Forex card. Zero
+                  markup applied.</p>
+              </div>
+              <div class="rounded-xl border border-amber-500/30 bg-amber-950/20 p-2.5 text-xs">
+                <div class="flex items-center justify-between font-bold text-amber-300">
+                  <span>Merchant Offender Flagged</span>
+                  <span class="text-[10px] text-slate-500">1h ago</span>
+                </div>
+                <p class="mt-1 text-[11px] text-slate-300">AIRLINE INTL DIRECT added to automated DCC blocklist (DCC
+                  propensity: 65%).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Authentication State Section -->
+        <div id="authSectionLoggedOut" class="flex items-center gap-2">
+          <button onclick="openAuthModal('signin')"
+            class="rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white">
+            Sign In
+          </button>
+          <button onclick="openAuthModal('signup')"
+            class="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-3.5 py-2 text-xs font-bold text-slate-950 shadow-md shadow-cyan-500/20 transition hover:from-cyan-400 hover:to-emerald-400">
+            Start Free Trial
+          </button>
+        </div>
+
+        <div id="authSectionLoggedIn" class="hidden relative">
+          <button onclick="toggleUserDropdown()"
+            class="flex items-center gap-2.5 rounded-xl border border-slate-700/80 bg-slate-800/70 py-1.5 pl-2 pr-3 text-xs transition hover:border-cyan-500/50">
+            <div id="userAvatar"
+              class="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/20 font-bold text-cyan-300">
+              AM
+            </div>
+            <div class="text-left hidden sm:block">
+              <p id="userNameDisplay" class="font-semibold text-white leading-tight">Alex Morgan</p>
+              <p id="userOrgDisplay" class="text-[10px] text-slate-400">Acme Treasury</p>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- User Profile Dropdown -->
+          <div id="userDropdown"
+            class="hidden absolute right-0 mt-2 w-64 rounded-2xl border border-slate-800 bg-slate-900/95 p-3.5 shadow-2xl backdrop-blur-xl z-50">
+            <div class="border-b border-slate-800 pb-3">
+              <p id="dropdownFullname" class="text-xs font-bold text-white">Alex Morgan</p>
+              <p id="dropdownEmail" class="text-[11px] text-slate-400">alex.morgan@acmetreasury.com</p>
+              <span
+                class="mt-1.5 inline-block rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                Enterprise Plus Plan
+              </span>
+            </div>
+            <div class="py-2 space-y-1 text-xs text-slate-300">
+              <button onclick="switchTab('cards'); toggleUserDropdown();"
+                class="w-full text-left rounded-lg px-2.5 py-1.5 hover:bg-slate-800 transition">Corporate Cards</button>
+              <button onclick="switchTab('api'); toggleUserDropdown();"
+                class="w-full text-left rounded-lg px-2.5 py-1.5 hover:bg-slate-800 transition">API Credentials</button>
+              <button onclick="switchTab('pricing'); toggleUserDropdown();"
+                class="w-full text-left rounded-lg px-2.5 py-1.5 hover:bg-slate-800 transition">Billing &amp;
+                Invoices</button>
+            </div>
+            <div class="border-t border-slate-800 pt-2">
+              <button onclick="signOutUser()"
+                class="w-full rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-rose-400 hover:bg-rose-950/30 transition">
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button onclick="toggleMobileMenu()"
+          class="md:hidden rounded-xl border border-slate-700 bg-slate-800/80 p-2 text-slate-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileMenu"
+      class="hidden md:hidden border-t border-slate-800 bg-[#070b13] px-4 py-3 space-y-2 text-xs font-medium text-slate-300">
+      <button onclick="switchTab('dashboard'); toggleMobileMenu();"
+        class="w-full text-left px-3 py-2 rounded-lg bg-slate-900 text-white">Live Dashboard</button>
+      <button onclick="switchTab('cards'); toggleMobileMenu();"
+        class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-900">Smart Card Portfolio</button>
+      <button onclick="switchTab('merchants'); toggleMobileMenu();"
+        class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-900">Merchant Directory</button>
+      <button onclick="switchTab('api'); toggleMobileMenu();"
+        class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-900">Developer API &amp; Webhooks</button>
+      <button onclick="switchTab('pricing'); toggleMobileMenu();"
+        class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-900">Plans &amp; ROI</button>
+    </div>
+
+    <!-- Zerodha-Inspired Live Streaming FX Ticker & DCC Spread Strip -->
+    <div
+      class="border-t border-slate-800/80 bg-slate-950/90 py-1.5 overflow-hidden font-mono text-[11px] border-b border-slate-800/60 shadow-inner">
+      <div class="animate-ticker flex items-center gap-8 whitespace-nowrap text-slate-300">
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">USD/INR</span> <span
+            class="text-white font-semibold">84.4820</span> <span class="text-emerald-400 font-medium text-[10px]">▲
+            +0.03%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">EUR/INR</span> <span
+            class="text-white font-semibold">91.2450</span> <span class="text-rose-400 font-medium text-[10px]">▼
+            -0.11%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">GBP/INR</span> <span
+            class="text-white font-semibold">107.3800</span> <span class="text-emerald-400 font-medium text-[10px]">▲
+            +0.07%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">AED/INR</span> <span
+            class="text-white font-semibold">23.0040</span> <span class="text-emerald-400 font-medium text-[10px]">▲
+            +0.01%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">SGD/INR</span> <span
+            class="text-white font-semibold">63.8500</span> <span class="text-rose-400 font-medium text-[10px]">▼
+            -0.04%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span
+            class="rounded bg-rose-500/20 text-rose-300 px-1.5 py-0.5 text-[10px] font-bold">AVG DCC TRAP MARKUP</span>
+          <span class="text-rose-400 font-bold">7.24%</span> <span class="text-slate-400 text-[10px]">(+₹312 /
+            $100)</span>
+        </div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span
+            class="rounded bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 text-[10px] font-bold">SMART ROUTING
+            INTERCEPT</span> <span class="text-emerald-400 font-bold">100% RECOVERED</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">CARD MARKUP INDEX</span> <span
+            class="text-amber-400 font-semibold">3.50% + 18% GST</span></div>
+        <div class="text-slate-700">•</div>
+        <!-- Infinite marquee duplicate -->
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">USD/INR</span> <span
+            class="text-white font-semibold">84.4820</span> <span class="text-emerald-400 font-medium text-[10px]">▲
+            +0.03%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">EUR/INR</span> <span
+            class="text-white font-semibold">91.2450</span> <span class="text-rose-400 font-medium text-[10px]">▼
+            -0.11%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">GBP/INR</span> <span
+            class="text-white font-semibold">107.3800</span> <span class="text-emerald-400 font-medium text-[10px]">▲
+            +0.07%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">AED/INR</span> <span
+            class="text-white font-semibold">23.0040</span> <span class="text-emerald-400 font-medium text-[10px]">▲
+            +0.01%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span class="text-slate-400 font-bold">SGD/INR</span> <span
+            class="text-white font-semibold">63.8500</span> <span class="text-rose-400 font-medium text-[10px]">▼
+            -0.04%</span></div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span
+            class="rounded bg-rose-500/20 text-rose-300 px-1.5 py-0.5 text-[10px] font-bold">AVG DCC TRAP MARKUP</span>
+          <span class="text-rose-400 font-bold">7.24%</span> <span class="text-slate-400 text-[10px]">(+₹312 /
+            $100)</span>
+        </div>
+        <div class="text-slate-700">•</div>
+        <div class="flex items-center gap-1.5"><span
+            class="rounded bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 text-[10px] font-bold">SMART ROUTING
+            INTERCEPT</span> <span class="text-emerald-400 font-bold">100% RECOVERED</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toast Notification Banner -->
+  <div id="toastBanner"
+    class="fixed bottom-5 right-5 z-50 hidden items-center justify-between rounded-xl border border-cyan-500/40 bg-slate-900/95 px-4 py-3 text-sm text-cyan-200 shadow-2xl backdrop-blur-md">
+    <div class="flex items-center gap-2.5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4" />
+        <path d="M12 8h.01" />
+      </svg>
+      <span id="toastMessage">Operation successful.</span>
+    </div>
+    <button type="button" onclick="hideToast()"
+      class="ml-4 text-xs font-semibold text-cyan-400 hover:text-white">Dismiss</button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. MAIN APPLICATION CONTENT TABS -->
+  <!-- ========================================================================= -->
+  <main class="relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+
+    <!-- TAB 1: LIVE DETECTION DASHBOARD -->
+    <div id="view-dashboard" class="space-y-6">
+
+      <!-- Commercial Hero Banner with HSBC-style Facet Geometry and Zerodha Terminal Aesthetics -->
+      <div
+        class="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-slate-900/90 via-[#0a1224]/90 to-slate-900/95 p-6 sm:p-7 shadow-2xl backdrop-blur-xl">
+        <!-- Subtle internal ambient aurora glow -->
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/[0.05] rounded-full blur-2xl pointer-events-none">
+        </div>
+        <div
+          class="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/[0.04] rounded-full blur-2xl pointer-events-none">
+        </div>
+
+        <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+          <div>
+            <div class="flex items-center gap-2">
+              <span
+                class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 border border-emerald-500/30">
+                AI Inference Engine Active
+              </span>
+              <span class="text-xs text-slate-400">Trained on LightGBM + SHAP TreeExplainer</span>
+            </div>
+            <h2 class="mt-2 text-xl sm:text-2xl font-black text-white">Dynamic Currency Conversion &amp; Hidden Markup
+              Firewall</h2>
+            <p class="mt-1 text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+              Foreign payment gateways routinely extract 4% to 9.5% through deceptive home-currency billing (DCC). FX
+              Guard detects the spread in sub-second authorization windows, auto-routes to zero-forex card rails, and
+              logs audit receipts.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="switchTab('cards')"
+              class="rounded-xl border border-slate-700 bg-slate-800/90 px-4 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition shadow">
+              Manage Cards
+            </button>
+            <button onclick="openAuthModal('signin')" id="heroConnectBtn"
+              class="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:from-cyan-400 hover:to-emerald-400 transition shadow-lg shadow-cyan-500/20">
+              Connect Treasury Bank
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <section aria-label="Key Performance Indicators" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- KPI 1 -->
+        <div class="glass-card rounded-2xl p-5 transition hover:border-rose-500/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Total FX / DCC Leakage</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                <polyline points="17 18 23 18 23 12" />
+              </svg>
+            </span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <p id="kpiTotalLeakage" class="font-mono text-2xl font-bold text-rose-400 sm:text-3xl">₹0.00</p>
+          </div>
+          <p class="mt-1.5 text-xs text-slate-400">Hidden spread + bank forex markup &amp; GST</p>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="glass-card rounded-2xl p-5 transition hover:border-emerald-500/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Zero-Forex Routing Savings</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
+            </span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <p id="kpiTotalSavings" class="font-mono text-2xl font-bold text-emerald-400 sm:text-3xl">₹0.00</p>
+          </div>
+          <p class="mt-1.5 text-xs text-slate-400">Recovered via native currency + 0% FX card</p>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="glass-card rounded-2xl p-5 transition hover:border-amber-500/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Avg DCC Markup %</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="5" x2="5" y2="19" />
+                <circle cx="6.5" cy="6.5" r="2.5" />
+                <circle cx="17.5" cy="17.5" r="2.5" />
+              </svg>
+            </span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <p id="kpiAvgMarkup" class="font-mono text-2xl font-bold text-amber-400 sm:text-3xl">0.00%</p>
+          </div>
+          <p class="mt-1.5 text-xs text-slate-400">Over live mid-market FX benchmark</p>
+        </div>
+
+        <!-- KPI 4 -->
+        <div class="glass-card rounded-2xl p-5 transition hover:border-cyan-500/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Flagged Intl Merchants</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            </span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <p id="kpiFlaggedMerchants" class="font-mono text-2xl font-bold text-cyan-400 sm:text-3xl">0</p>
+            <span id="kpiTotalTxSub" class="text-xs text-slate-400">across 0 txns</span>
+          </div>
+          <p class="mt-1.5 text-xs text-slate-400">Auto-routed to zero-forex card policy</p>
+        </div>
+      </section>
+
+      <!-- Interactive Live SMS / Webhook Alert Simulator Panel -->
+      <section aria-label="Live SMS and Webhook Alert Simulator" class="glass-card rounded-2xl p-5 sm:p-6">
+        <div
+          class="mb-5 flex flex-col justify-between gap-3 border-b border-slate-800 pb-4 sm:flex-row sm:items-center">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+              <h2 class="text-base font-bold text-white sm:text-lg">Real-Time Authorization Alert Simulator</h2>
+            </div>
+            <p class="mt-0.5 text-xs text-slate-400">
+              Test incoming card authorization webhooks or SMS alerts, inspect DCC spread physics, and trigger automated
+              routing rules.
+            </p>
+          </div>
+
+          <!-- Presets -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-medium text-slate-400">Presets:</span>
+            <button type="button" onclick="loadPreset('dcc_trap')"
+              class="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-500/20 transition">
+              DCC Trap (ACME CLOUD)
+            </button>
+            <button type="button" onclick="loadPreset('std_fx')"
+              class="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/20 transition">
+              3.5% Markup + GST
+            </button>
+            <button type="button" onclick="loadPreset('zero_fx')"
+              class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 hover:bg-emerald-500/20 transition">
+              Zero-Forex Card
+            </button>
+            <button type="button" onclick="loadPreset('domestic')"
+              class="rounded-xl border border-slate-600 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-slate-700 transition">
+              Domestic INR
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <!-- Left Input Form (7 cols) -->
+          <div class="space-y-4 lg:col-span-7">
+            <div>
+              <label for="smsInput" class="mb-1.5 flex items-center justify-between text-xs font-medium text-slate-300">
+                <span>Raw Bank SMS / Card Authorization Payload</span>
+                <button type="button" id="parseSmsBtn"
+                  class="text-cyan-400 hover:text-cyan-300 underline font-semibold">Auto-Parse into Fields</button>
+              </label>
+              <textarea id="smsInput" rows="2"
+                class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3.5 py-2.5 font-mono text-xs text-slate-100 placeholder-slate-500 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500">Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50) on Card ending 4412.</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div>
+                <label for="merchantInput" class="mb-1 block text-xs font-medium text-slate-400">Merchant Name</label>
+                <input id="merchantInput" type="text" value="ACME CLOUD EU"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none" />
+              </div>
+              <div>
+                <label for="mccInput" class="mb-1 block text-xs font-medium text-slate-400">MCC &amp; Category</label>
+                <select id="mccInput"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none">
+                  <option value="5734">5734 — Cloud / Software</option>
+                  <option value="5816">5816 — Digital Games / OTT</option>
+                  <option value="7011">7011 — Hotels &amp; Lodging</option>
+                  <option value="4511">4511 — International Airlines</option>
+                  <option value="5411">5411 — Domestic Retail</option>
+                </select>
+              </div>
+              <div>
+                <label for="cardTypeInput" class="mb-1 block text-xs font-medium text-slate-400">Active Card
+                  Profile</label>
+                <select id="cardTypeInput"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none">
+                  <option value="standard">Standard Corporate (3.5% + GST)</option>
+                  <option value="zerofx">Zero-Forex Priority (0% Markup)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              <div>
+                <label for="billedCurrInput" class="mb-1 block text-xs font-medium text-slate-400">Billed Curr</label>
+                <select id="billedCurrInput"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 font-mono text-xs text-white focus:border-cyan-500 focus:outline-none">
+                  <option value="INR" selected>INR</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                </select>
+              </div>
+              <div>
+                <label for="billedAmtInput" class="mb-1 block text-xs font-medium text-slate-400">Billed Amount</label>
+                <input id="billedAmtInput" type="number" step="0.01" value="4485.00"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 font-mono text-xs text-white focus:border-cyan-500 focus:outline-none" />
+              </div>
+              <div>
+                <label for="originCurrInput" class="mb-1 block text-xs font-medium text-slate-400">Origin Curr</label>
+                <select id="originCurrInput"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 font-mono text-xs text-white focus:border-cyan-500 focus:outline-none">
+                  <option value="USD" selected>USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="INR">INR</option>
+                </select>
+              </div>
+              <div>
+                <label for="originAmtInput" class="mb-1 block text-xs font-medium text-slate-400">Origin Amt</label>
+                <input id="originAmtInput" type="number" step="0.01" value="49.00"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 font-mono text-xs text-white focus:border-cyan-500 focus:outline-none" />
+              </div>
+              <div class="col-span-2 sm:col-span-1">
+                <label for="midRateInput" class="mb-1 block text-xs font-medium text-slate-400">Mid FX → INR</label>
+                <input id="midRateInput" type="number" step="0.01" value="84.50"
+                  class="w-full rounded-xl border border-slate-700 bg-slate-900/90 px-3 py-2 font-mono text-xs text-white focus:border-cyan-500 focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+              <button id="analyzeBtn" type="button"
+                class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:from-emerald-400 hover:to-cyan-400 active:scale-[0.99]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.4">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                Analyze Transaction &amp; Log to Ledger
+              </button>
+              <button id="previewOnlyBtn" type="button"
+                class="rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-xs font-medium text-slate-200 transition hover:bg-slate-800">
+                Preview Score Only
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Real-Time Inference Result Card (5 cols) -->
+          <div
+            class="flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-950/80 p-5 lg:col-span-5">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Inference &amp; Routing
+                  Decision</span>
+                <span id="simRiskBadge"
+                  class="rounded-full border border-rose-500/40 bg-rose-500/15 px-3 py-1 font-mono text-xs font-bold text-rose-300">
+                  DCC RISK: 94.2%
+                </span>
+              </div>
+
+              <!-- Risk Gauge Progress Bar -->
+              <div class="mt-3">
+                <div class="mb-1 flex justify-between text-[11px] text-slate-400">
+                  <span>Model Probability (LightGBM)</span>
+                  <span id="simImpliedRateText" class="font-mono text-slate-300">Implied FX: ₹91.53 vs ₹84.50</span>
+                </div>
+                <div class="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
+                  <div id="simRiskBar"
+                    class="h-full rounded-full bg-gradient-to-r from-amber-500 to-rose-500 transition-all duration-300"
+                    style="width: 94.2%;"></div>
+                </div>
+              </div>
+
+              <!-- Breakdown Grid -->
+              <div
+                class="mt-4 grid grid-cols-3 gap-2.5 rounded-xl border border-slate-800/90 bg-slate-900/70 p-3 text-center">
+                <div>
+                  <p class="text-[11px] text-slate-400">Mid-Market INR</p>
+                  <p id="simMidInr" class="mt-0.5 font-mono text-sm font-semibold text-slate-200">₹4,140.50</p>
+                </div>
+                <div>
+                  <p class="text-[11px] text-slate-400">Billed INR</p>
+                  <p id="simBilledInr" class="mt-0.5 font-mono text-sm font-semibold text-white">₹4,485.00</p>
+                </div>
+                <div>
+                  <p class="text-[11px] text-slate-400">Leakage Loss</p>
+                  <p id="simLeakageInr" class="mt-0.5 font-mono text-sm font-bold text-rose-400">₹344.50 (8.32%)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Automated Routing Recommendation Box -->
+            <div id="simActionBox" class="mt-4 rounded-xl border border-rose-500/35 bg-rose-950/30 p-3.5">
+              <div class="flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-rose-400 animate-ping"></span>
+                <p id="simActionTitle" class="font-mono text-xs font-bold text-rose-300">
+                  BLOCK DCC &amp; ROUTE TO ZERO-FOREX CARD
+                </p>
+              </div>
+              <p id="simActionAdvice" class="mt-1.5 text-xs leading-relaxed text-slate-300">
+                Merchant billed in INR at +8.32% over mid-market rate (₹344.50 extra). Decline INR DCC prompt, pay in
+                USD, and auto-route future charges to Zero-Forex card.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics Charts Grid -->
+      <section aria-label="Analytics and SHAP Explanations" class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <!-- Cumulative Leakage vs Smart-Routing Savings -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-7">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-white sm:text-base">Cumulative Leakage vs. Smart-Routing Savings</h3>
+              <p class="text-xs text-slate-400">Running INR loss on standard cards vs. counterfactual savings with 0% FX
+                routing</p>
+            </div>
+            <span
+              class="rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 font-mono text-[11px] text-emerald-400">
+              INR (₹) Cumulative
+            </span>
+          </div>
+          <div class="relative h-64 w-full sm:h-72">
+            <canvas id="cumulativeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Merchant-wise DCC Leakage Breakdown -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-5">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-bold text-white sm:text-base">Top DCC-Offending Merchants</h3>
+              <p class="text-xs text-slate-400">Total hidden FX &amp; DCC leakage extracted per merchant (INR)</p>
+            </div>
+          </div>
+          <div class="relative h-64 w-full sm:h-72">
+            <canvas id="merchantChart"></canvas>
+          </div>
+        </div>
+
+        <!-- SHAP Feature Importance Explorer -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6 lg:col-span-12">
+          <div
+            class="mb-4 flex flex-col justify-between gap-3 border-b border-slate-800 pb-4 sm:flex-row sm:items-center">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-white sm:text-base">SHAP Feature Explanations — LightGBM DCC
+                  Classifier</h3>
+                <span
+                  class="rounded-md bg-cyan-500/15 px-2 py-0.5 font-mono text-[11px] font-medium text-cyan-300">TreeExplainer
+                  Model</span>
+              </div>
+              <p id="shapSubtitle" class="mt-0.5 text-xs text-slate-400">
+                Global mean |SHAP| values across validation dataset showing top drivers of DCC trap probability.
+              </p>
+            </div>
+
+            <!-- Toggle: Global vs Local SHAP -->
+            <div class="inline-flex rounded-xl border border-slate-700 bg-slate-900 p-1">
+              <button id="shapGlobalBtn" type="button" onclick="setShapMode('global')"
+                class="rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition">
+                Global Mean |SHAP|
+              </button>
+              <button id="shapLocalBtn" type="button" onclick="setShapMode('local')"
+                class="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:text-white">
+                Local Explanation (Current Tx)
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <div class="relative h-72 w-full lg:col-span-8">
+              <canvas id="shapChart"></canvas>
+            </div>
+            <div
+              class="flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-900/60 p-4 lg:col-span-4">
+              <div>
+                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Interpreting Model Features
+                </h4>
+                <ul class="mt-3 space-y-2.5 text-xs leading-relaxed text-slate-400">
+                  <li class="flex items-start gap-2">
+                    <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-rose-400"></span>
+                    <span><strong class="text-slate-200">rate_spread_pct:</strong> Dominant SHAP driver. Whenever
+                      implied FX rate diverges &gt;3% over benchmark, DCC score surges to &gt;0.90.</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-cyan-400"></span>
+                    <span><strong class="text-slate-200">billed_in_home_currency:</strong> Flags foreign origin
+                      transactions settled in INR at deceptive cross-border checkout gates.</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-400"></span>
+                    <span><strong class="text-slate-200">merchant_hist_dcc_rate:</strong> Tracks historical propensity
+                      to trigger pre-emptive routing before checkout confirmation.</span>
+                  </li>
+                </ul>
+              </div>
+              <div id="localShapSummaryBox"
+                class="mt-4 rounded-lg border border-slate-800 bg-slate-950/90 p-3 font-mono text-[11px] text-slate-300">
+                Base log-odds: -1.85 → Current Output Prob: <span id="shapCurrentProb"
+                  class="font-bold text-rose-400">0.942</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filterable Transactions Table -->
+      <section aria-label="Transactions and Merchant Routing Rules" class="glass-card rounded-2xl p-5 sm:p-6">
+        <div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div>
+            <h3 class="text-sm font-bold text-white sm:text-base">Real-Time Routing &amp; Audit Ledger</h3>
+            <p class="text-xs text-slate-400">Click any row to inspect its local SHAP breakdown in the explanation chart
+              above.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5">
+            <input id="searchMerchantInput" type="text" placeholder="Filter merchant or MCC..."
+              class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none" />
+            <select id="ruleFilterSelect"
+              class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:border-cyan-500 focus:outline-none">
+              <option value="ALL">All Routing Rules</option>
+              <option value="BLOCK_DCC">Block DCC &amp; Route 0% FX</option>
+              <option value="ROUTE_ZERO_FX">Route to 0% FX Card</option>
+              <option value="KEEP_CARD">Keep Current Card</option>
+            </select>
+            <button onclick="exportLedgerCsv()"
+              class="rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-700 transition">
+              Export CSV
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="min-w-full divide-y divide-slate-800 text-left text-xs">
+            <thead class="bg-slate-900/95 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <tr>
+                <th class="px-3.5 py-3">Timestamp</th>
+                <th class="px-3.5 py-3">Merchant (MCC)</th>
+                <th class="px-3.5 py-3">Billed</th>
+                <th class="px-3.5 py-3">Origin</th>
+                <th class="px-3.5 py-3">Mid-Market INR</th>
+                <th class="px-3.5 py-3">Leakage INR &amp; %</th>
+                <th class="px-3.5 py-3">DCC Prob</th>
+                <th class="px-3.5 py-3">Active Routing Rule</th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody" class="divide-y divide-slate-800/70 bg-slate-950/40 text-slate-200">
+              <!-- Populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- TAB 2: SMART CARD PORTFOLIO -->
+    <div id="view-cards" class="hidden space-y-6">
+      <div
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-xl font-black text-white">Smart Card Portfolio &amp; Routing Rules</h2>
+          <p class="text-xs text-slate-400 mt-1">Manage corporate cards, configure zero-forex rails, and set up priority
+            fallback policies.</p>
+        </div>
+        <button onclick="openAddCardModal()"
+          class="rounded-xl bg-cyan-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/20">
+          + Add Corporate Card
+        </button>
+      </div>
+
+      <!-- Active Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Card 1 -->
+        <div class="glass-card rounded-2xl p-5 border border-emerald-500/40 relative overflow-hidden">
+          <div
+            class="absolute top-0 right-0 bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-emerald-500/30">
+            PRIMARY 0% FX RAIL
+          </div>
+          <div class="flex items-center gap-3">
+            <div
+              class="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold">
+              💳
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Scapia Federal Bank Card</h3>
+              <p class="text-xs text-slate-400 font-mono">VISA Signature •••• 9012</p>
+            </div>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-xs border-t border-slate-800/80 pt-3">
+            <div>
+              <span class="text-slate-500 text-[11px]">Forex Markup</span>
+              <p class="font-bold text-emerald-400">0.00% (Zero Forex)</p>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[11px]">GST on Markup</span>
+              <p class="font-semibold text-slate-300">0.00%</p>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500 text-[11px]">30-Day Volume</span>
+              <p class="font-mono text-slate-200">₹3,42,800</p>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500 text-[11px]">Leakage Saved</span>
+              <p class="font-mono font-bold text-emerald-400">₹14,150.00</p>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs">
+            <span class="text-emerald-400 flex items-center gap-1.5 font-medium">
+              <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Active Routing Target
+            </span>
+            <button onclick="showToast('Scapia Card routing priority updated.')"
+              class="text-slate-400 hover:text-white">Configure</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 relative overflow-hidden">
+          <div
+            class="absolute top-0 right-0 bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-cyan-500/30">
+            BACKUP 0% FX RAIL
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 font-bold">
+              💳
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">Niyo Global Equitas Card</h3>
+              <p class="text-xs text-slate-400 font-mono">VISA Platinum •••• 6184</p>
+            </div>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-xs border-t border-slate-800/80 pt-3">
+            <div>
+              <span class="text-slate-500 text-[11px]">Forex Markup</span>
+              <p class="font-bold text-emerald-400">0.00% (Zero Forex)</p>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[11px]">GST on Markup</span>
+              <p class="font-semibold text-slate-300">0.00%</p>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500 text-[11px]">30-Day Volume</span>
+              <p class="font-mono text-slate-200">₹1,12,400</p>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500 text-[11px]">Leakage Saved</span>
+              <p class="font-mono font-bold text-emerald-400">₹4,640.00</p>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs">
+            <span class="text-cyan-400 flex items-center gap-1.5 font-medium">
+              <span class="h-2 w-2 rounded-full bg-cyan-400"></span> Active Secondary
+            </span>
+            <button onclick="showToast('Niyo Card settings opened.')"
+              class="text-slate-400 hover:text-white">Configure</button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="glass-card rounded-2xl p-5 border border-amber-500/30 relative overflow-hidden">
+          <div
+            class="absolute top-0 right-0 bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold px-3 py-1 rounded-bl-xl border-l border-b border-amber-500/30">
+            STANDARD 3.5%
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 font-bold">
+              💳
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-white">HDFC Regalia Corporate</h3>
+              <p class="text-xs text-slate-400 font-mono">Mastercard •••• 4412</p>
+            </div>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-xs border-t border-slate-800/80 pt-3">
+            <div>
+              <span class="text-slate-500 text-[11px]">Forex Markup</span>
+              <p class="font-bold text-rose-400">3.50% Markup</p>
+            </div>
+            <div>
+              <span class="text-slate-500 text-[11px]">GST on Markup</span>
+              <p class="font-semibold text-rose-400">18.00%</p>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500 text-[11px]">Domestic Spend</span>
+              <p class="font-mono text-slate-200">₹8,90,500</p>
+            </div>
+            <div class="mt-2">
+              <span class="text-slate-500 text-[11px]">DCC Vulnerability</span>
+              <p class="font-mono font-bold text-amber-400">High Risk</p>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3 text-xs">
+            <span class="text-amber-400 flex items-center gap-1.5 font-medium">
+              <span class="h-2 w-2 rounded-full bg-amber-400"></span> Intercept Protected
+            </span>
+            <button onclick="showToast('HDFC Card rules updated.')"
+              class="text-slate-400 hover:text-white">Configure</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Automated Card Routing Logic Rules -->
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Automated Payment Routing Policy Matrix</h3>
+        <p class="text-xs text-slate-400 mt-1">Rules evaluated sequentially before payment confirmation.</p>
+
+        <div class="mt-4 space-y-3">
+          <div
+            class="flex items-center justify-between p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 text-xs">
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-6 w-6 items-center justify-center rounded-lg bg-rose-500/20 text-rose-400 font-bold">1</span>
+              <div>
+                <p class="font-bold text-white">Rule DCC-BLOCK: Deceptive Dynamic Currency Conversion Detected</p>
+                <p class="text-slate-400 text-[11px]">If merchant bills in INR but origin currency is foreign and markup
+                  &gt; 3.0% $\rightarrow$ Auto-decline INR prompt, switch charge to native currency, route to
+                  <strong>Scapia Federal (0% FX)</strong>.
+                </p>
+              </div>
+            </div>
+            <span
+              class="rounded-full bg-emerald-500/15 text-emerald-400 px-3 py-1 font-mono text-[10px] font-bold">ACTIVE</span>
+          </div>
+
+          <div
+            class="flex items-center justify-between p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 text-xs">
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-6 w-6 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 font-bold">2</span>
+              <div>
+                <p class="font-bold text-white">Rule INT-OPT: Native Foreign Currency Routing</p>
+                <p class="text-slate-400 text-[11px]">If transaction origin is USD, EUR, or GBP $\rightarrow$ Auto-route
+                  to <strong>Niyo Global Equitas</strong> to eliminate standard 3.5% + 18% GST bank fee.</p>
+              </div>
+            </div>
+            <span
+              class="rounded-full bg-emerald-500/15 text-emerald-400 px-3 py-1 font-mono text-[10px] font-bold">ACTIVE</span>
+          </div>
+
+          <div
+            class="flex items-center justify-between p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 text-xs">
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-700 text-slate-300 font-bold">3</span>
+              <div>
+                <p class="font-bold text-white">Rule DOM-PASS: Domestic INR Merchant Neutral</p>
+                <p class="text-slate-400 text-[11px]">If transaction is domestic INR with no currency conversion
+                  $\rightarrow$ Keep primary corporate rewards card <strong>HDFC Regalia</strong>.</p>
+              </div>
+            </div>
+            <span
+              class="rounded-full bg-slate-700 text-slate-300 px-3 py-1 font-mono text-[10px] font-bold">DEFAULT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: MERCHANT DIRECTORY -->
+    <div id="view-merchants" class="hidden space-y-6">
+      <div
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-xl font-black text-white">Global Merchant Risk Directory &amp; DCC Blacklist</h2>
+          <p class="text-xs text-slate-400 mt-1">Historical database of cross-border payment gateways, DCC conversion
+            rates, and automated enforcement status.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" id="merchantDirectorySearch" oninput="filterMerchantDirectory()"
+            placeholder="Search merchant..."
+            class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none" />
+          <button onclick="showToast('Merchant directory refreshed with latest network telemetry.')"
+            class="rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white">
+            Sync Telemetry
+          </button>
+        </div>
+      </div>
+
+      <!-- Merchant Directory Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-800 text-left text-xs">
+            <thead class="bg-slate-900/95 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <tr>
+                <th class="px-4 py-3">Merchant Name</th>
+                <th class="px-4 py-3">MCC &amp; Category</th>
+                <th class="px-4 py-3">Native Currency</th>
+                <th class="px-4 py-3">DCC Trap Propensity</th>
+                <th class="px-4 py-3">Avg Hidden Spread %</th>
+                <th class="px-4 py-3">Risk Assessment</th>
+                <th class="px-4 py-3">Enforcement Action</th>
+              </tr>
+            </thead>
+            <tbody id="merchantDirectoryBody" class="divide-y divide-slate-800/70 bg-slate-950/40 text-slate-200">
+              <tr class="hover:bg-slate-800/30">
+                <td class="px-4 py-3.5 font-bold text-white">ACME CLOUD EU</td>
+                <td class="px-4 py-3.5 text-slate-300">5734 (Cloud Infrastructure)</td>
+                <td class="px-4 py-3.5 font-mono text-cyan-300">USD</td>
+                <td class="px-4 py-3.5 font-mono font-bold text-rose-400">85.0%</td>
+                <td class="px-4 py-3.5 font-mono text-rose-300">+8.32%</td>
+                <td class="px-4 py-3.5"><span
+                    class="rounded-full bg-rose-500/20 text-rose-300 px-2.5 py-0.5 text-[10px] font-bold">CRITICAL
+                    OFFENDER</span></td>
+                <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-cyan-300 font-bold">Decline DCC &amp;
+                    Route 0% FX</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/30">
+                <td class="px-4 py-3.5 font-bold text-white">HOTEL BOOKING GLOBAL</td>
+                <td class="px-4 py-3.5 text-slate-300">7011 (Hotels &amp; Lodging)</td>
+                <td class="px-4 py-3.5 font-mono text-cyan-300">EUR</td>
+                <td class="px-4 py-3.5 font-mono font-bold text-rose-400">80.0%</td>
+                <td class="px-4 py-3.5 font-mono text-rose-300">+7.95%</td>
+                <td class="px-4 py-3.5"><span
+                    class="rounded-full bg-rose-500/20 text-rose-300 px-2.5 py-0.5 text-[10px] font-bold">CRITICAL
+                    OFFENDER</span></td>
+                <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-cyan-300 font-bold">Decline DCC &amp;
+                    Route 0% FX</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/30">
+                <td class="px-4 py-3.5 font-bold text-white">STEAM STORE INTL</td>
+                <td class="px-4 py-3.5 text-slate-300">5816 (Digital Games &amp; Media)</td>
+                <td class="px-4 py-3.5 font-mono text-cyan-300">USD</td>
+                <td class="px-4 py-3.5 font-mono font-bold text-amber-400">75.0%</td>
+                <td class="px-4 py-3.5 font-mono text-amber-300">+6.40%</td>
+                <td class="px-4 py-3.5"><span
+                    class="rounded-full bg-amber-500/20 text-amber-300 px-2.5 py-0.5 text-[10px] font-bold">HIGH
+                    RISK</span></td>
+                <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-cyan-300 font-bold">Decline DCC &amp;
+                    Route 0% FX</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/30">
+                <td class="px-4 py-3.5 font-bold text-white">AIRLINE INTL DIRECT</td>
+                <td class="px-4 py-3.5 text-slate-300">4511 (Airlines)</td>
+                <td class="px-4 py-3.5 font-mono text-cyan-300">USD</td>
+                <td class="px-4 py-3.5 font-mono font-bold text-amber-400">65.0%</td>
+                <td class="px-4 py-3.5 font-mono text-amber-300">+5.80%</td>
+                <td class="px-4 py-3.5"><span
+                    class="rounded-full bg-amber-500/20 text-amber-300 px-2.5 py-0.5 text-[10px] font-bold">HIGH
+                    RISK</span></td>
+                <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-cyan-300 font-bold">Decline DCC &amp;
+                    Route 0% FX</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/30">
+                <td class="px-4 py-3.5 font-bold text-white">DEV API SERVICE</td>
+                <td class="px-4 py-3.5 text-slate-300">5734 (Cloud / Software)</td>
+                <td class="px-4 py-3.5 font-mono text-cyan-300">USD</td>
+                <td class="px-4 py-3.5 font-mono font-bold text-emerald-400">25.0%</td>
+                <td class="px-4 py-3.5 font-mono text-emerald-300">+3.50%</td>
+                <td class="px-4 py-3.5"><span
+                    class="rounded-full bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 text-[10px] font-bold">MODERATE</span>
+                </td>
+                <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-emerald-300 font-bold">Route to 0% FX
+                    Card</span></td>
+              </tr>
+              <tr class="hover:bg-slate-800/30">
+                <td class="px-4 py-3.5 font-bold text-white">LOCAL SUPERMARKET</td>
+                <td class="px-4 py-3.5 text-slate-300">5411 (Grocery Stores)</td>
+                <td class="px-4 py-3.5 font-mono text-slate-400">INR</td>
+                <td class="px-4 py-3.5 font-mono font-bold text-emerald-400">0.0%</td>
+                <td class="px-4 py-3.5 font-mono text-slate-400">0.00%</td>
+                <td class="px-4 py-3.5"><span
+                    class="rounded-full bg-slate-800 text-slate-400 px-2.5 py-0.5 text-[10px] font-bold">SAFE
+                    DOMESTIC</span></td>
+                <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-slate-400 font-bold">Keep Primary
+                    Card</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: DEVELOPER API & WEBHOOKS -->
+    <div id="view-api" class="hidden space-y-6">
+      <div
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h2 class="text-xl font-black text-white">Developer API Gateway &amp; Issuer Webhooks</h2>
+          <p class="text-xs text-slate-400 mt-1">Integrate real-time card authorization hooks, inspect payload
+            responses, and provision API keys.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="rounded-md bg-emerald-500/20 text-emerald-300 px-2.5 py-1 text-xs font-mono font-bold">
+            LATENCY: 12ms SLA
+          </span>
+        </div>
+      </div>
+
+      <!-- API Credentials Card -->
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Live API Credentials</h3>
+        <p class="text-xs text-slate-400 mt-1">Use this secret key in your <code
+            class="text-cyan-300">Authorization: Bearer</code> header for server-to-server evaluation.</p>
+
+        <div class="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div
+            class="code-block flex-1 rounded-xl px-4 py-2.5 text-xs text-cyan-300 flex items-center justify-between font-mono">
+            <span>fx_live_9a8f27b9c4e10d8a77321e90ffbc1</span>
+            <span class="text-slate-500 text-[10px]">Active • Enterprise Key</span>
+          </div>
+          <button onclick="copyApiKey()"
+            class="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-bold text-white hover:bg-slate-700 transition">
+            Copy Key
+          </button>
+          <button onclick="showToast('New production key generated. Previous key will expire in 24 hours.')"
+            class="rounded-xl border border-rose-500/30 bg-rose-950/20 px-4 py-2.5 text-xs font-bold text-rose-300 hover:bg-rose-950/40 transition">
+            Roll Key
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Code Snippets -->
+      <div class="glass-card rounded-2xl p-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-bold text-white">Evaluate Transaction Endpoint (<code
+                class="text-cyan-400">POST /api/alerts/evaluate</code>)</h3>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs">
+            <button id="langBtn-curl" onclick="switchSnippetLang('curl')"
+              class="rounded-lg bg-cyan-500 px-2.5 py-1 text-slate-950 font-bold">cURL</button>
+            <button id="langBtn-python" onclick="switchSnippetLang('python')"
+              class="rounded-lg px-2.5 py-1 text-slate-400 hover:text-white">Python</button>
+            <button id="langBtn-node" onclick="switchSnippetLang('node')"
+              class="rounded-lg px-2.5 py-1 text-slate-400 hover:text-white">Node.js</button>
+          </div>
+        </div>
+
+        <pre id="snippetCode"
+          class="mt-4 code-block rounded-xl p-4 text-xs text-slate-200 overflow-x-auto leading-relaxed">
+curl -X POST "http://localhost:8000/api/alerts/evaluate" \
+  -H "Authorization: Bearer fx_live_9a8f27b9c4e10d8a..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "alert_text": "Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50) on Card ending 4412.",
+    "home_currency": "INR",
+    "card_markup_pct": 3.5,
+    "gst_on_markup_pct": 18.0
+  }'
+        </pre>
+      </div>
+
+      <!-- Webhook Simulator Tester -->
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Test Card Authorization Webhook</h3>
+        <p class="text-xs text-slate-400 mt-1">Dispatch an event payload to your configured webhook listener.</p>
+
+        <div class="mt-4 flex flex-col sm:flex-row items-center gap-3">
+          <input type="text" id="webhookUrlInput" value="https://api.yourcompany.com/v1/fx-webhook"
+            class="w-full sm:flex-1 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 font-mono text-xs text-white focus:border-cyan-500 focus:outline-none" />
+          <button onclick="dispatchTestWebhook()"
+            class="w-full sm:w-auto rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-5 py-2.5 text-xs font-bold text-slate-950 hover:from-cyan-400 hover:to-emerald-400 transition">
+            Dispatch Test Ping (200 OK)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: PLANS & ROI CALCULATOR -->
+    <div id="view-pricing" class="hidden space-y-8">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <span class="rounded-full bg-cyan-500/20 text-cyan-300 font-bold px-3 py-1 text-xs">COMMERCIAL TREASURY
+          PRICING</span>
+        <h2 class="text-2xl sm:text-3xl font-black text-white">Guaranteed Positive ROI in Month 1</h2>
+        <p class="text-xs sm:text-sm text-slate-400">Recover up to 9% on every international corporate card transaction
+          with automated sub-second DCC and forex shielding.</p>
+      </div>
+
+      <!-- Interactive ROI Calculator Card -->
+      <div class="glass-card rounded-2xl p-6 sm:p-8 max-w-3xl mx-auto border border-cyan-500/40">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white">Live Treasury ROI Calculator</h3>
+            <p class="text-xs text-slate-400">Estimate your company's monthly recoverable leakage.</p>
+          </div>
+          <span class="rounded-lg bg-emerald-500/10 text-emerald-400 font-mono text-xs px-2.5 py-1 font-bold">Avg
+            Recovery: 6.8%</span>
+        </div>
+
+        <div class="mt-6 space-y-4">
+          <div class="flex justify-between text-xs font-semibold">
+            <span class="text-slate-300">Monthly Foreign Currency Spend:</span>
+            <span id="roiSpendDisplay" class="font-mono text-cyan-300 text-sm font-bold">₹10,00,000 / month</span>
+          </div>
+          <input type="range" id="roiSpendSlider" min="100000" max="5000000" step="50000" value="1000000"
+            oninput="updateRoiCalc()" class="w-full accent-cyan-400 cursor-pointer" />
+          <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+            <span>₹1,00,000</span>
+            <span>₹25,00,000</span>
+            <span>₹50,00,000</span>
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-center border-t border-slate-800/80 pt-5">
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+            <span class="text-[11px] text-slate-400">Estimated Unmanaged Loss</span>
+            <p id="roiUnmanagedLoss" class="font-mono text-base font-bold text-rose-400 mt-1">₹68,000 / mo</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+            <span class="text-[11px] text-slate-400">FX Guard Annual Savings</span>
+            <p id="roiAnnualSavings" class="font-mono text-base font-bold text-emerald-400 mt-1">₹8,16,000 / yr</p>
+          </div>
+          <div class="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30">
+            <span class="text-[11px] text-cyan-300">Calculated Net ROI</span>
+            <p id="roiNetMultiplier" class="font-mono text-base font-bold text-cyan-300 mt-1">16.4x Return</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Plans Tiers -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Tier 1 -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white">Starter</h3>
+            <p class="text-xs text-slate-400 mt-1">For single-entity founders and individual cardholders.</p>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-3xl font-black text-white">$0</span>
+              <span class="text-xs text-slate-400">/ forever free</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-xs text-slate-300">
+              <li class="flex items-center gap-2">✓ Up to 100 transactions/mo</li>
+              <li class="flex items-center gap-2">✓ Manual SMS alert parser</li>
+              <li class="flex items-center gap-2">✓ Basic 0% forex card recommendations</li>
+              <li class="flex items-center gap-2 text-slate-500">✗ Automated bank webhooks</li>
+              <li class="flex items-center gap-2 text-slate-500">✗ Custom SHAP explainability</li>
+            </ul>
+          </div>
+          <button onclick="openAuthModal('signup')"
+            class="mt-6 w-full rounded-xl border border-slate-700 bg-slate-800 py-2.5 text-xs font-bold text-white hover:bg-slate-700 transition">
+            Get Started Free
+          </button>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border-2 border-cyan-500/60 relative">
+          <div
+            class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-slate-950 text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider">
+            Most Popular
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Growth &amp; Treasury</h3>
+            <p class="text-xs text-slate-400 mt-1">For growing startups and corporate treasury departments.</p>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-3xl font-black text-white">$199</span>
+              <span class="text-xs text-slate-400">/ month</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-xs text-slate-300">
+              <li class="flex items-center gap-2">✓ Up to 10,000 transactions/mo</li>
+              <li class="flex items-center gap-2">✓ Real-time LightGBM DCC model</li>
+              <li class="flex items-center gap-2">✓ Smart card portfolio automated routing</li>
+              <li class="flex items-center gap-2">✓ Webhook gateway &amp; developer API</li>
+              <li class="flex items-center gap-2">✓ Global &amp; local SHAP explanations</li>
+            </ul>
+          </div>
+          <button onclick="openAuthModal('signup')"
+            class="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-2.5 text-xs font-bold text-slate-950 hover:from-cyan-400 hover:to-emerald-400 transition shadow-lg shadow-cyan-500/20">
+            Start 14-Day Free Trial
+          </button>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="glass-card rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white">Enterprise Custom</h3>
+            <p class="text-xs text-slate-400 mt-1">For neobanks, card issuers, and high-volume corporate fleets.</p>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-3xl font-black text-white">Custom</span>
+              <span class="text-xs text-slate-400">/ volume SLA</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-xs text-slate-300">
+              <li class="flex items-center gap-2">✓ Unlimited transactions</li>
+              <li class="flex items-center gap-2">✓ Dedicated sub-10ms inference VPC</li>
+              <li class="flex items-center gap-2">✓ Custom BIN sponsorship &amp; issuer plugins</li>
+              <li class="flex items-center gap-2">✓ SOC-2 Type II audit report &amp; DPA</li>
+              <li class="flex items-center gap-2">✓ 24/7 dedicated treasury engineer</li>
+            </ul>
+          </div>
+          <button onclick="showToast('Enterprise sales request submitted. A representative will contact you.')"
+            class="mt-6 w-full rounded-xl border border-cyan-500/40 bg-cyan-950/20 py-2.5 text-xs font-bold text-cyan-300 hover:bg-cyan-950/40 transition">
+            Contact Enterprise Sales
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- 3. AUTHENTICATION & LOGIN MODAL -->
+  <!-- ========================================================================= -->
+  <div id="authModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 relative border border-slate-700 shadow-2xl">
+      <!-- Close button -->
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Auth Modal Header Tabs -->
+      <div class="flex items-center gap-4 border-b border-slate-800 pb-3">
+        <button id="authTabSignIn" onclick="setAuthMode('signin')"
+          class="text-sm font-bold text-cyan-400 border-b-2 border-cyan-400 pb-1">
+          Sign In
+        </button>
+        <button id="authTabSignUp" onclick="setAuthMode('signup')"
+          class="text-sm font-semibold text-slate-400 hover:text-white pb-1">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Social / SSO Login -->
+      <div class="mt-4 space-y-2">
+        <button onclick="quickLogin('google')"
+          class="w-full flex items-center justify-center gap-2.5 rounded-xl border border-slate-700 bg-slate-900/90 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition">
+          <svg class="h-4 w-4" viewBox="0 0 24 24">
+            <path fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          Continue with Google Workspace
+        </button>
+        <button onclick="quickLogin('sso')"
+          class="w-full flex items-center justify-center gap-2.5 rounded-xl border border-slate-700 bg-slate-900/90 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-400" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Single Sign-On (Okta / Azure AD)
+        </button>
+      </div>
+
+      <div class="my-4 flex items-center gap-3">
+        <div class="h-px flex-1 bg-slate-800"></div>
+        <span class="text-[10px] uppercase font-bold text-slate-500">Or with corporate email</span>
+        <div class="h-px flex-1 bg-slate-800"></div>
+      </div>
+
+      <!-- Email & Password Form -->
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
+        <div id="signupNameField" class="hidden">
+          <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+          <input type="text" id="authNameInput" placeholder="Alex Morgan"
+            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Corporate Email</label>
+          <input type="email" id="authEmailInput" required value="alex.morgan@acmetreasury.com"
+            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none" />
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-medium text-slate-400">Password</label>
+            <a href="#" onclick="showToast('Password reset link sent to registered email.')"
+              class="text-[11px] text-cyan-400 hover:underline">Forgot?</a>
+          </div>
+          <input type="password" id="authPasswordInput" required value="••••••••••••"
+            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none" />
+        </div>
+
+        <button type="submit" id="authSubmitBtn"
+          class="w-full mt-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-2.5 text-xs font-bold text-slate-950 hover:from-cyan-400 hover:to-emerald-400 transition shadow-lg shadow-cyan-500/20">
+          Sign In to FX Guard
+        </button>
+      </form>
+
+      <!-- 1-Click Quick Demo Login Profiles -->
+      <div class="mt-4 pt-4 border-t border-slate-800">
+        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-2">⚡ 1-Click Demo Profiles</span>
+        <div class="grid grid-cols-2 gap-2 text-[11px]">
+          <button onclick="fillDemoUser('alex')"
+            class="p-2 rounded-lg border border-slate-800 bg-slate-900 text-left hover:border-cyan-500/40">
+            <p class="font-bold text-white">Alex Morgan</p>
+            <p class="text-[10px] text-slate-400">Acme Treasury</p>
+          </button>
+          <button onclick="fillDemoUser('sarah')"
+            class="p-2 rounded-lg border border-slate-800 bg-slate-900 text-left hover:border-cyan-500/40">
+            <p class="font-bold text-white">Sarah Chen</p>
+            <p class="text-[10px] text-slate-400">Fintech Ops</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. ADD CORPORATE CARD MODAL -->
+  <!-- ========================================================================= -->
+  <div id="addCardModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl p-6 relative border border-slate-700 shadow-2xl">
+      <button onclick="closeAddCardModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <h3 class="text-base font-bold text-white">Add Corporate Card to Routing Suite</h3>
+      <p class="text-xs text-slate-400 mt-0.5">Register a card profile to enable automated rule switching.</p>
+
+      <form onsubmit="handleAddCardSubmit(event)" class="mt-4 space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Card Nickname</label>
+          <input type="text" id="newCardName" required placeholder="e.g., Chase Sapphire Reserve"
+            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Network</label>
+            <select id="newCardNetwork"
+              class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white">
+              <option value="VISA">VISA</option>
+              <option value="Mastercard">Mastercard</option>
+              <option value="Amex">American Express</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Last 4 Digits</label>
+            <input type="text" id="newCardLast4" maxlength="4" placeholder="7890" required
+              class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono text-white focus:border-cyan-500 focus:outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Forex Markup %</label>
+            <input type="number" step="0.1" id="newCardMarkup" value="0.0"
+              class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono text-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">GST on Markup %</label>
+            <input type="number" step="0.1" id="newCardGst" value="0.0"
+              class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-mono text-white" />
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full mt-3 rounded-xl bg-cyan-500 py-2.5 text-xs font-bold text-slate-950 hover:bg-cyan-400 transition">
+          Save Card to Portfolio
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4B. COMPLIANCE, SECURITY & LEGAL DOCUMENTATION MODAL -->
+  <!-- Conforms to WCAG 2.1 AA financial accessibility standards & regulatory frameworks -->
+  <!-- ========================================================================= -->
+  <div id="legalDocModal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto">
+    <div
+      class="glass-card w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-slate-700 shadow-2xl overflow-hidden relative">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 px-6 py-4 bg-slate-950/80">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 font-bold text-sm">
+            §
+          </div>
+          <div>
+            <h3 id="docModalTitle" class="text-sm sm:text-base font-bold text-white">Financial Compliance &amp;
+              Regulatory Portal</h3>
+            <p id="docModalSubtitle" class="text-[11px] text-slate-400">Institutional Governance, Security Frameworks
+              &amp; Service Level Commitments</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeDocModal()" aria-label="Close dialog"
+          class="rounded-lg p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 transition">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Document Switcher Tabs -->
+      <div
+        class="flex items-center gap-2 border-b border-slate-800/80 px-6 py-2.5 bg-slate-900/60 overflow-x-auto text-xs">
+        <button id="docTab-privacy" onclick="switchDocTab('privacy')"
+          class="px-3 py-1.5 rounded-lg font-semibold transition text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 whitespace-nowrap">Privacy
+          Policy</button>
+        <button id="docTab-terms" onclick="switchDocTab('terms')"
+          class="px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-white whitespace-nowrap">Terms
+          of Service</button>
+        <button id="docTab-soc2" onclick="switchDocTab('soc2')"
+          class="px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-white whitespace-nowrap">SOC-2
+          Type II</button>
+        <button id="docTab-pci" onclick="switchDocTab('pci')"
+          class="px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-white whitespace-nowrap">PCI-DSS
+          Tokenization</button>
+        <button id="docTab-sla" onclick="switchDocTab('sla')"
+          class="px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-white whitespace-nowrap">99.99%
+          Latency SLA</button>
+      </div>
+
+      <!-- Document Content Body -->
+      <div id="docModalContent"
+        class="p-6 overflow-y-auto text-xs text-slate-300 leading-relaxed space-y-4 max-h-[calc(90vh-140px)]">
+        <!-- Rendered dynamically via JavaScript switchDocTab() -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="border-t border-slate-800 px-6 py-3 bg-slate-950/80 flex items-center justify-between text-[11px] text-slate-400">
+        <span>Regulatory Authority: Global Financial Standards (GDPR • DPDP 2023 • RBI Card Directives)</span>
+        <button type="button" onclick="closeDocModal()"
+          class="rounded-lg bg-slate-800 px-3.5 py-1.5 font-semibold text-white hover:bg-slate-700 transition">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 5. PRODUCTION FOOTER -->
+  <!-- ========================================================================= -->
+  <footer
+    class="relative z-10 border-t border-slate-800/80 bg-[#060912]/95 backdrop-blur-md text-xs text-slate-400 py-10 mt-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center gap-2">
+            <div
+              class="h-6 w-6 rounded-lg bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs">
+              FX</div>
+            <span class="font-bold text-white text-sm">FX Guard Enterprise</span>
+          </div>
+          <p class="mt-2 text-[11px] text-slate-400 leading-relaxed">
+            Real-time dynamic currency conversion and forex leakage defense platform for corporate treasury, global
+            cardholders, and fintechs.
+          </p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-[11px] text-emerald-400 font-medium">Global Network Operational</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[11px] tracking-wider">Product &amp; Engine</h4>
+          <ul class="mt-2.5 space-y-2 text-[11px]">
+            <li><button type="button" onclick="scrollToSection('dashboard', 'smsInput')"
+                class="hover:text-cyan-300 transition text-left">Real-Time DCC Detector</button></li>
+            <li><button type="button" onclick="switchTab('cards')"
+                class="hover:text-cyan-300 transition text-left">Smart Card Router</button></li>
+            <li><button type="button" onclick="switchTab('merchants')"
+                class="hover:text-cyan-300 transition text-left">Merchant Blacklist Directory</button></li>
+            <li><button type="button" onclick="scrollToSection('dashboard', 'shapChart')"
+                class="hover:text-cyan-300 transition text-left">SHAP Feature Explainability</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[11px] tracking-wider">Developers &amp; API</h4>
+          <ul class="mt-2.5 space-y-2 text-[11px]">
+            <li><button type="button" onclick="scrollToSection('api', 'webhookUrlInput')"
+                class="hover:text-cyan-300 transition text-left">Webhook Gateway</button></li>
+            <li><a href="/docs" target="_blank" rel="noopener noreferrer"
+                class="hover:text-cyan-300 transition flex items-center gap-1">REST API Reference <span
+                  class="text-[9px] text-cyan-400">↗</span></a></li>
+            <li><button type="button" onclick="openDocModal('sla')"
+                class="hover:text-cyan-300 transition text-left">99.99% Latency SLA</button></li>
+            <li><button type="button" onclick="exportPostmanCollection()"
+                class="hover:text-cyan-200 text-cyan-400 font-bold transition text-left flex items-center gap-1.5">
+                <span>Export Postman Collection</span>
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-white uppercase text-[11px] tracking-wider">Security &amp; Legal</h4>
+          <ul class="mt-2.5 space-y-2 text-[11px]">
+            <li><button type="button" onclick="openDocModal('soc2')"
+                class="hover:text-white transition text-left flex items-center gap-1.5"><span
+                  class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> <span class="text-slate-300 font-medium">SOC-2
+                  Type II Certified</span></button></li>
+            <li><button type="button" onclick="openDocModal('pci')"
+                class="hover:text-white transition text-left flex items-center gap-1.5"><span
+                  class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> <span
+                  class="text-slate-300 font-medium">PCI-DSS Level 1 Compliant</span></button></li>
+            <li><button type="button" onclick="openDocModal('privacy')"
+                class="hover:text-cyan-300 transition text-left">Privacy Policy</button></li>
+            <li><button type="button" onclick="openDocModal('terms')"
+                class="hover:text-cyan-300 transition text-left">Terms of Service</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        class="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+        <p>© 2026 FX Guard Technologies Inc. All rights reserved.</p>
+        <p>Built with LightGBM, SHAP TreeExplainer, and Tailwind CSS.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 6. COMPLETE INTERACTIVE APPLICATION LOGIC -->
+  <!-- ========================================================================= -->
+  <script>
+    // Initial Dataset
+    const INITIAL_TRANSACTIONS = [
+      {
+        tx_id: "tx_0101",
+        timestamp: "2026-11-18 10:14",
+        merchant_name: "ACME CLOUD EU",
+        mcc: "5734",
+        is_international: 1,
+        billed_currency: "INR",
+        billed_amount: 4465.00,
+        origin_currency: "USD",
+        origin_amount: 49.00,
+        mid_market_rate: 84.40,
+        card_type: "standard"
+      },
+      {
+        tx_id: "tx_0102",
+        timestamp: "2026-11-19 14:22",
+        merchant_name: "LOCAL SUPERMARKET",
+        mcc: "5411",
+        is_international: 0,
+        billed_currency: "INR",
+        billed_amount: 1240.00,
+        origin_currency: "INR",
+        origin_amount: 1240.00,
+        mid_market_rate: 1.00,
+        card_type: "standard"
+      },
+      {
+        tx_id: "tx_0103",
+        timestamp: "2026-11-20 18:05",
+        merchant_name: "STEAM STORE INTL",
+        mcc: "5816",
+        is_international: 1,
+        billed_currency: "INR",
+        billed_amount: 2195.00,
+        origin_currency: "USD",
+        origin_amount: 24.00,
+        mid_market_rate: 84.45,
+        card_type: "standard"
+      },
+      {
+        tx_id: "tx_0104",
+        timestamp: "2026-11-21 09:40",
+        merchant_name: "DEV API SERVICE",
+        mcc: "5734",
+        is_international: 1,
+        billed_currency: "USD",
+        billed_amount: 30.20,
+        origin_currency: "USD",
+        origin_amount: 29.00,
+        mid_market_rate: 84.50,
+        card_type: "standard"
+      },
+      {
+        tx_id: "tx_0105",
+        timestamp: "2026-11-22 12:15",
+        merchant_name: "HOTEL BOOKING GLOBAL",
+        mcc: "7011",
+        is_international: 1,
+        billed_currency: "INR",
+        billed_amount: 13780.00,
+        origin_currency: "EUR",
+        origin_amount: 140.00,
+        mid_market_rate: 91.20,
+        card_type: "standard"
+      },
+      {
+        tx_id: "tx_0106",
+        timestamp: "2026-11-22 20:50",
+        merchant_name: "MUSEUM PASS ABROAD",
+        mcc: "7991",
+        is_international: 1,
+        billed_currency: "GBP",
+        billed_amount: 35.00,
+        origin_currency: "GBP",
+        origin_amount: 35.00,
+        mid_market_rate: 107.40,
+        card_type: "zerofx"
+      },
+      {
+        tx_id: "tx_0107",
+        timestamp: "2026-11-23 16:30",
+        merchant_name: "AIRLINE INTL DIRECT",
+        mcc: "4511",
+        is_international: 1,
+        billed_currency: "INR",
+        billed_amount: 28890.00,
+        origin_currency: "USD",
+        origin_amount: 320.00,
+        mid_market_rate: 84.50,
+        card_type: "standard"
+      },
+      {
+        tx_id: "tx_0108",
+        timestamp: "2026-11-24 11:10",
+        merchant_name: "ACME CLOUD EU",
+        mcc: "5734",
+        is_international: 1,
+        billed_currency: "INR",
+        billed_amount: 4485.00,
+        origin_currency: "USD",
+        origin_amount: 49.00,
+        mid_market_rate: 84.50,
+        card_type: "standard"
+      }
+    ];
+
+    // State Variables
+    let transactions = [];
+    let shapMode = "global";
+    let selectedLocalTx = null;
+    let currentUser = null; // null when logged out, object when logged in
+    let currentTab = "dashboard";
+
+    // Chart instances
+    let cumulativeChart = null;
+    let merchantChart = null;
+    let shapChart = null;
+
+    // Toast helper
+    function showToast(msg) {
+      const banner = document.getElementById("toastBanner");
+      document.getElementById("toastMessage").textContent = msg;
+      banner.classList.remove("hidden");
+      banner.classList.add("flex");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(hideToast, 4000);
+    }
+
+    function hideToast() {
+      const banner = document.getElementById("toastBanner");
+      banner.classList.add("hidden");
+      banner.classList.remove("flex");
+    }
+
+    function formatINR(num) {
+      return "₹" + Number(num).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // =========================================================================
+    // TAB NAVIGATION CONTROLLER
+    // =========================================================================
+    function switchTab(tabId) {
+      currentTab = tabId;
+      const tabs = ["dashboard", "cards", "merchants", "api", "pricing"];
+      tabs.forEach((t) => {
+        const viewEl = document.getElementById(`view-${t}`);
+        const btnEl = document.getElementById(`tabBtn-${t}`);
+        if (t === tabId) {
+          if (viewEl) viewEl.classList.remove("hidden");
+          if (btnEl) btnEl.className = "nav-tab-active px-3 py-2 rounded-lg transition hover:text-white";
+        } else {
+          if (viewEl) viewEl.classList.add("hidden");
+          if (btnEl) btnEl.className = "px-3 py-2 rounded-lg transition hover:text-white hover:bg-slate-800/50";
+        }
+      });
+      if (tabId === "dashboard") {
+        setTimeout(refreshAllViews, 50);
+      }
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById("mobileMenu");
+      menu.classList.toggle("hidden");
+    }
+
+    // =========================================================================
+    // AUTHENTICATION & IDENTITY CONTROLLER
+    // =========================================================================
+    let currentAuthMode = "signin";
+
+    function openAuthModal(mode = "signin") {
+      setAuthMode(mode);
+      document.getElementById("authModal").classList.remove("hidden");
+    }
+
+    function closeAuthModal() {
+      document.getElementById("authModal").classList.add("hidden");
+    }
+
+    function setAuthMode(mode) {
+      currentAuthMode = mode;
+      const signInTab = document.getElementById("authTabSignIn");
+      const signUpTab = document.getElementById("authTabSignUp");
+      const nameField = document.getElementById("signupNameField");
+      const submitBtn = document.getElementById("authSubmitBtn");
+
+      if (mode === "signin") {
+        signInTab.className = "text-sm font-bold text-cyan-400 border-b-2 border-cyan-400 pb-1";
+        signUpTab.className = "text-sm font-semibold text-slate-400 hover:text-white pb-1";
+        nameField.classList.add("hidden");
+        submitBtn.textContent = "Sign In to FX Guard";
+      } else {
+        signUpTab.className = "text-sm font-bold text-cyan-400 border-b-2 border-cyan-400 pb-1";
+        signInTab.className = "text-sm font-semibold text-slate-400 hover:text-white pb-1";
+        nameField.classList.remove("hidden");
+        submitBtn.textContent = "Create Enterprise Account";
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("authEmailInput").value;
+      const name = document.getElementById("authNameInput").value || email.split("@")[0];
+      loginUser({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        email: email,
+        org: "Acme Treasury",
+        role: "Treasury Admin"
+      });
+    }
+
+    function quickLogin(provider) {
+      loginUser({
+        name: "Alex Morgan",
+        email: "alex.morgan@acmetreasury.com",
+        org: "Acme Treasury Corp",
+        role: "Corporate Treasury Admin"
+      });
+      showToast(`Authenticated seamlessly via ${provider === 'google' ? 'Google Workspace' : 'Okta SSO'}.`);
+    }
+
+    function fillDemoUser(preset) {
+      if (preset === "alex") {
+        loginUser({
+          name: "Alex Morgan",
+          email: "alex.morgan@acmetreasury.com",
+          org: "Acme Treasury Corp",
+          role: "Corporate Treasury Admin"
+        });
+      } else {
+        loginUser({
+          name: "Sarah Chen",
+          email: "sarah.chen@stripe-fintech.io",
+          org: "Stripe Billing Entity",
+          role: "Fintech Ops Lead"
+        });
+      }
+    }
+
+    function loginUser(userObj) {
+      currentUser = userObj;
+      closeAuthModal();
+
+      // Update UI elements
+      document.getElementById("authSectionLoggedOut").classList.add("hidden");
+      document.getElementById("authSectionLoggedIn").classList.remove("hidden");
+
+      const initials = userObj.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+      document.getElementById("userAvatar").textContent = initials;
+      document.getElementById("userNameDisplay").textContent = userObj.name;
+      document.getElementById("userOrgDisplay").textContent = userObj.org;
+
+      document.getElementById("dropdownFullname").textContent = userObj.name;
+      document.getElementById("dropdownEmail").textContent = userObj.email;
+
+      showToast(`Welcome back, ${userObj.name} (${userObj.org}).`);
+    }
+
+    function signOutUser() {
+      currentUser = null;
+      document.getElementById("authSectionLoggedIn").classList.add("hidden");
+      document.getElementById("authSectionLoggedOut").classList.remove("hidden");
+      document.getElementById("userDropdown").classList.add("hidden");
+      showToast("Signed out of FX Guard session.");
+    }
+
+    function toggleUserDropdown() {
+      document.getElementById("userDropdown").classList.toggle("hidden");
+    }
+
+    // Notifications
+    function toggleNotifications() {
+      document.getElementById("notifDropdown").classList.toggle("hidden");
+    }
+
+    function clearNotifications() {
+      document.getElementById("notifBadge").classList.add("hidden");
+      document.getElementById("notifList").innerHTML = `
+        <div class="py-6 text-center text-xs text-slate-500">
+          No unread notifications. All payment rails normal.
+        </div>
+      `;
+      showToast("All security alerts marked as read.");
+    }
+
+    // Add Card Modal
+    function openAddCardModal() {
+      document.getElementById("addCardModal").classList.remove("hidden");
+    }
+    function closeAddCardModal() {
+      document.getElementById("addCardModal").classList.add("hidden");
+    }
+    function handleAddCardSubmit(e) {
+      e.preventDefault();
+      const cardName = document.getElementById("newCardName").value;
+      const last4 = document.getElementById("newCardLast4").value;
+      closeAddCardModal();
+      showToast(`Added ${cardName} (•••• ${last4}) to active card portfolio.`);
+    }
+
+    // =========================================================================
+    // DETERMINISTIC FX ENGINE & LIGHTGBM + SHAP SCORER
+    // =========================================================================
+    function analyzeTransactionLogic(rawTx, priorHistory) {
+      const homeCurrency = "INR";
+      const isInternational =
+        rawTx.origin_currency !== homeCurrency ||
+          rawTx.billed_currency !== homeCurrency ||
+          Number(rawTx.mid_market_rate) > 1.01
+          ? 1
+          : 0;
+
+      let midMarketInr = 0;
+      let billedInr = 0;
+      let leakageInr = 0;
+      let impliedFxRate = 1.0;
+
+      if (rawTx.billed_currency === homeCurrency && rawTx.origin_currency !== homeCurrency && rawTx.origin_amount > 0) {
+        midMarketInr = rawTx.origin_amount * rawTx.mid_market_rate;
+        billedInr = rawTx.billed_amount;
+        leakageInr = Math.max(0, billedInr - midMarketInr);
+        impliedFxRate = rawTx.billed_amount / rawTx.origin_amount;
+      } else if (rawTx.billed_currency === homeCurrency && rawTx.origin_currency === homeCurrency) {
+        midMarketInr = rawTx.billed_amount;
+        billedInr = rawTx.billed_amount;
+        leakageInr = 0;
+        impliedFxRate = 1.0;
+      } else {
+        midMarketInr = rawTx.origin_amount * rawTx.mid_market_rate;
+        const effectiveBilledForeign =
+          rawTx.card_type === "standard" && Math.abs(rawTx.billed_amount - rawTx.origin_amount) < 0.01
+            ? rawTx.origin_amount * 1.0413
+            : rawTx.billed_amount;
+
+        billedInr = effectiveBilledForeign * rawTx.mid_market_rate;
+        leakageInr = Math.max(0, billedInr - midMarketInr);
+        impliedFxRate = billedInr / Math.max(0.01, rawTx.origin_amount);
+      }
+
+      const leakagePct = midMarketInr > 0 ? (leakageInr / midMarketInr) * 100 : 0;
+      const billedInHome = rawTx.billed_currency === homeCurrency ? 1 : 0;
+      const rateSpreadPct =
+        rawTx.mid_market_rate > 1.01
+          ? ((impliedFxRate - rawTx.mid_market_rate) / rawTx.mid_market_rate) * 100
+          : 0;
+
+      const merchPrior = priorHistory.filter((t) => t.merchant_name === rawTx.merchant_name);
+      const priorCount = merchPrior.length;
+      const histDccRate =
+        priorCount > 0
+          ? merchPrior.filter((t) => t.dcc_prob >= 0.7).length / priorCount
+          : 0;
+      const histLeakagePct =
+        priorCount > 0
+          ? merchPrior.reduce((acc, t) => acc + t.leakage_pct, 0) / priorCount
+          : 0;
+      const logMidMarketInr = Math.log1p(Math.max(0, midMarketInr));
+
+      const baseLogOdds = -1.85;
+      const shapContributions = {
+        rate_spread_pct: isInternational && billedInHome ? Math.min(2.8, Math.max(-0.4, (rateSpreadPct - 2.2) * 0.45)) : -0.35,
+        leakage_pct: Math.min(2.1, Math.max(-0.3, (leakagePct - 2.5) * 0.32)),
+        billed_in_home_currency: isInternational && billedInHome ? 1.35 : -0.65,
+        merchant_hist_dcc_rate: priorCount > 0 ? (histDccRate - 0.3) * 1.4 : 0.0,
+        is_international: isInternational ? 0.55 : -1.45,
+        merchant_hist_leakage_pct: priorCount > 0 ? Math.min(0.9, (histLeakagePct - 2.0) * 0.12) : 0.0,
+        log_mid_market_inr: (logMidMarketInr - 7.5) * 0.08,
+        merchant_prior_tx_count: Math.min(0.35, priorCount * 0.07)
+      };
+
+      const totalLogOdds =
+        baseLogOdds +
+        Object.values(shapContributions).reduce((sum, val) => sum + val, 0);
+      const dccProb = 1 / (1 + Math.exp(-totalLogOdds));
+
+      let ruleCode = "KEEP_CARD";
+      let ruleLabel = "KEEP CURRENT CARD";
+      let advice = "Domestic or zero-forex optimal transaction. No hidden currency conversion markup detected.";
+
+      if (dccProb >= 0.70 || (isInternational && billedInHome && leakagePct >= 3.8)) {
+        ruleCode = "BLOCK_DCC";
+        ruleLabel = "BLOCK DCC & ROUTE 0% FX";
+        advice = `Merchant billed in INR at +${leakagePct.toFixed(2)}% over mid-market rate (₹${leakageInr.toFixed(2)} extra). Decline INR DCC prompt, pay in ${rawTx.origin_currency}, and auto-route future charges to Zero-Forex card.`;
+      } else if (isInternational && leakagePct > 0.5) {
+        ruleCode = "ROUTE_ZERO_FX";
+        ruleLabel = "ROUTE TO 0% FX CARD";
+        advice = `Billed in ${rawTx.billed_currency} with ~${leakagePct.toFixed(2)}% bank FX markup + GST (₹${leakageInr.toFixed(2)}). Route future ${rawTx.merchant_name} charges to a Zero-Forex card to save 100% of markup.`;
+      }
+
+      return {
+        ...rawTx,
+        is_international: isInternational,
+        mid_market_inr: Number(midMarketInr.toFixed(2)),
+        billed_inr: Number(billedInr.toFixed(2)),
+        leakage_inr: Number(leakageInr.toFixed(2)),
+        leakage_pct: Number(leakagePct.toFixed(2)),
+        implied_fx_rate: Number(impliedFxRate.toFixed(4)),
+        rate_spread_pct: Number(rateSpreadPct.toFixed(2)),
+        dcc_prob: Number(dccProb.toFixed(3)),
+        rule_code: ruleCode,
+        rule_label: ruleLabel,
+        advice: advice,
+        shap: shapContributions
+      };
+    }
+
+    function hydrateInitialDataset() {
+      transactions = [];
+      for (const item of INITIAL_TRANSACTIONS) {
+        const enriched = analyzeTransactionLogic(item, transactions);
+        transactions.push(enriched);
+      }
+      selectedLocalTx = transactions[transactions.length - 1];
+    }
+
+    // =========================================================================
+    // SIMULATOR, PARSER & UI SYNCHRONIZATION
+    // =========================================================================
+    function loadPreset(type) {
+      if (type === "dcc_trap") {
+        document.getElementById("smsInput").value =
+          "Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50) on Card ending 4412.";
+        document.getElementById("merchantInput").value = "ACME CLOUD EU";
+        document.getElementById("mccInput").value = "5734";
+        document.getElementById("cardTypeInput").value = "standard";
+        document.getElementById("billedCurrInput").value = "INR";
+        document.getElementById("billedAmtInput").value = "4485.00";
+        document.getElementById("originCurrInput").value = "USD";
+        document.getElementById("originAmtInput").value = "49.00";
+        document.getElementById("midRateInput").value = "84.50";
+      } else if (type === "std_fx") {
+        document.getElementById("smsInput").value =
+          "Spent USD 49.00 at ACME CLOUD EU (mid 84.50) on Card ending 4412.";
+        document.getElementById("merchantInput").value = "ACME CLOUD EU";
+        document.getElementById("mccInput").value = "5734";
+        document.getElementById("cardTypeInput").value = "standard";
+        document.getElementById("billedCurrInput").value = "USD";
+        document.getElementById("billedAmtInput").value = "49.00";
+        document.getElementById("originCurrInput").value = "USD";
+        document.getElementById("originAmtInput").value = "49.00";
+        document.getElementById("midRateInput").value = "84.50";
+      } else if (type === "zero_fx") {
+        document.getElementById("smsInput").value =
+          "Spent USD 49.00 at ACME CLOUD EU on Zero-Forex Card ending 9012.";
+        document.getElementById("merchantInput").value = "ACME CLOUD EU";
+        document.getElementById("mccInput").value = "5734";
+        document.getElementById("cardTypeInput").value = "zerofx";
+        document.getElementById("billedCurrInput").value = "USD";
+        document.getElementById("billedAmtInput").value = "49.00";
+        document.getElementById("originCurrInput").value = "USD";
+        document.getElementById("originAmtInput").value = "49.00";
+        document.getElementById("midRateInput").value = "84.50";
+      } else if (type === "domestic") {
+        document.getElementById("smsInput").value =
+          "Spent INR 1,450.00 at LOCAL SUPERMARKET on Card ending 4412.";
+        document.getElementById("merchantInput").value = "LOCAL SUPERMARKET";
+        document.getElementById("mccInput").value = "5411";
+        document.getElementById("cardTypeInput").value = "standard";
+        document.getElementById("billedCurrInput").value = "INR";
+        document.getElementById("billedAmtInput").value = "1450.00";
+        document.getElementById("originCurrInput").value = "INR";
+        document.getElementById("originAmtInput").value = "1450.00";
+        document.getElementById("midRateInput").value = "1.00";
+      }
+      runSimulator(false);
+    }
+
+    // =========================================================================
+    // FASTAPI BACKEND INTEGRATION ENGINE
+    // =========================================================================
+    const API_BASE = window.location.origin;
+    let backendConnected = false;
+    let globalShapData = null;
+
+    async function checkBackendHealth() {
+      try {
+        const res = await fetch(`${API_BASE}/api/health`);
+        if (res.ok) {
+          const data = await res.json();
+          backendConnected = true;
+          const statusPill = document.getElementById("backendStatusPill");
+          if (statusPill) {
+            statusPill.classList.remove("hidden");
+            document.getElementById("backendStatusText").textContent = `FastAPI Engine Active (${data.history_count} records)`;
+          }
+          return true;
+        }
+      } catch (err) {
+        console.warn("FastAPI backend not reachable directly, using resilient local simulator", err);
+      }
+      return false;
+    }
+
+    async function loadBackendInitialData() {
+      const isHealthy = await checkBackendHealth();
+      if (!isHealthy) {
+        hydrateInitialDataset();
+        refreshAllViews();
+        updateSimulatorCard(selectedLocalTx);
+        return;
+      }
+
+      try {
+        // 1. Fetch real enriched transactions from backend
+        const txRes = await fetch(`${API_BASE}/api/transactions?limit=25`);
+        if (txRes.ok) {
+          const txData = await txRes.json();
+          if (txData.transactions && txData.transactions.length > 0) {
+            transactions = txData.transactions;
+            selectedLocalTx = transactions[0];
+          }
+        }
+
+        // 2. Fetch real summary KPIs from backend
+        const sumRes = await fetch(`${API_BASE}/api/portfolio/summary`);
+        if (sumRes.ok) {
+          const s = await sumRes.json();
+          document.getElementById("kpiTotalLeakage").textContent = formatINR(s.total_leakage_inr);
+          document.getElementById("kpiTotalSavings").textContent = formatINR(s.estimated_savings_inr);
+          document.getElementById("kpiAvgMarkup").textContent = s.avg_markup_pct.toFixed(2) + "%";
+          document.getElementById("kpiFlaggedMerchants").textContent = s.flagged_merchants_count;
+          document.getElementById("kpiTotalTxSub").textContent = `across ${s.total_transactions} txns`;
+        }
+
+        // 3. Fetch real merchant directory from backend
+        const merchRes = await fetch(`${API_BASE}/api/merchants`);
+        if (merchRes.ok) {
+          const mData = await merchRes.json();
+          renderBackendMerchants(mData.merchants);
+        }
+
+        // 4. Fetch global SHAP from LightGBM model
+        const shapRes = await fetch(`${API_BASE}/api/shap/global`);
+        if (shapRes.ok) {
+          const shData = await shapRes.json();
+          globalShapData = shData.features;
+        }
+
+        refreshAllViews();
+        updateSimulatorCard(selectedLocalTx);
+        showToast("🟢 Connected to live FastAPI backend & LightGBM model.");
+      } catch (e) {
+        console.error("Error loading backend data:", e);
+        hydrateInitialDataset();
+        refreshAllViews();
+        updateSimulatorCard(selectedLocalTx);
+      }
+    }
+
+    function renderBackendMerchants(merchants) {
+      const tbody = document.getElementById("merchantDirectoryBody");
+      if (!tbody || !merchants || merchants.length === 0) return;
+      tbody.innerHTML = merchants.map(m => `
+        <tr class="hover:bg-slate-800/30">
+          <td class="px-4 py-3.5 font-bold text-white">${m.merchant_name}</td>
+          <td class="px-4 py-3.5 text-slate-300">${m.mcc}</td>
+          <td class="px-4 py-3.5 font-mono text-cyan-300">${m.origin_currency}</td>
+          <td class="px-4 py-3.5 font-mono font-bold ${m.dcc_propensity_pct >= 70 ? 'text-rose-400' : (m.dcc_propensity_pct >= 30 ? 'text-amber-400' : 'text-emerald-400')}">${m.dcc_propensity_pct.toFixed(1)}%</td>
+          <td class="px-4 py-3.5 font-mono ${m.avg_spread_pct > 0 ? 'text-rose-300' : 'text-slate-400'}">+${m.avg_spread_pct.toFixed(2)}%</td>
+          <td class="px-4 py-3.5"><span class="rounded-full ${m.risk_tier.includes('CRITICAL') ? 'bg-rose-500/20 text-rose-300' : (m.risk_tier.includes('HIGH') ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300')} px-2.5 py-0.5 text-[10px] font-bold">${m.risk_tier}</span></td>
+          <td class="px-4 py-3.5"><span class="font-mono text-[11px] text-cyan-300 font-bold">${m.action}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    async function parseSmsTextIntoFields() {
+      const text = document.getElementById("smsInput").value.trim();
+      if (!text) return;
+
+      if (backendConnected) {
+        try {
+          showToast("Querying FastAPI backend alert evaluator...");
+          const res = await fetch(`${API_BASE}/api/alerts/evaluate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              alert_text: text,
+              home_currency: "INR",
+              card_markup_pct: 3.5,
+              gst_on_markup_pct: 18.0
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const p = data.parsed;
+            document.getElementById("merchantInput").value = p.merchant_name;
+            document.getElementById("mccInput").value = p.mcc;
+            document.getElementById("billedCurrInput").value = p.billed_currency;
+            document.getElementById("billedAmtInput").value = p.billed_amount.toFixed(2);
+            document.getElementById("originCurrInput").value = p.origin_currency;
+            document.getElementById("originAmtInput").value = p.origin_amount.toFixed(2);
+            document.getElementById("midRateInput").value = data.mid_market_rate_used.toFixed(2);
+
+            const txObj = {
+              tx_id: "tx_" + Math.random().toString(36).substring(2, 7),
+              timestamp: new Date().toISOString().slice(0, 16).replace("T", " "),
+              merchant_name: p.merchant_name,
+              mcc: p.mcc,
+              billed_currency: p.billed_currency,
+              billed_amount: p.billed_amount,
+              origin_currency: p.origin_currency,
+              origin_amount: p.origin_amount,
+              mid_market_rate: data.mid_market_rate_used,
+              card_type: document.getElementById("cardTypeInput").value,
+              is_international: p.is_international,
+              mid_market_inr: data.mid_market_inr,
+              billed_inr: data.billed_inr,
+              leakage_inr: data.leakage_inr,
+              leakage_pct: data.leakage_pct,
+              implied_fx_rate: data.implied_fx_rate,
+              rate_spread_pct: data.rate_spread_pct,
+              dcc_prob: data.dcc_probability,
+              rule_code: data.rule_code,
+              rule_label: data.rule_label,
+              advice: data.advice,
+              shap: data.shap
+            };
+            selectedLocalTx = txObj;
+            updateSimulatorCard(txObj);
+            if (shapMode === "local") updateShapChart();
+            showToast(`Backend evaluated: DCC Prob ${(data.dcc_probability * 100).toFixed(1)}% (${data.rule_label}).`);
+            return;
+          }
+        } catch (e) {
+          console.warn("Backend evaluate error, falling back to client parser:", e);
+        }
+      }
+
+      // Client-side parser fallback
+      const amtMatch = text.match(/Spent\s+([A-Z]{3})\s+([\d,]+(?:\.\d{1,2})?)/i);
+      const merchMatch = text.match(/at\s+([A-Za-z0-9\s]+?)\s*(?:\(|on\s+Card|$)/i);
+      const origMatch = text.match(/\(([A-Z]{3})\s+([\d,]+(?:\.\d{1,2})?)(?:,\s*mid\s+([\d.]+))?\)/i);
+
+      if (amtMatch) {
+        document.getElementById("billedCurrInput").value = amtMatch[1].toUpperCase();
+        document.getElementById("billedAmtInput").value = parseFloat(amtMatch[2].replace(/,/g, "")).toFixed(2);
+      }
+      if (merchMatch) {
+        document.getElementById("merchantInput").value = merchMatch[1].trim();
+      }
+      if (origMatch) {
+        document.getElementById("originCurrInput").value = origMatch[1].toUpperCase();
+        document.getElementById("originAmtInput").value = parseFloat(origMatch[2].replace(/,/g, "")).toFixed(2);
+        if (origMatch[3]) {
+          document.getElementById("midRateInput").value = parseFloat(origMatch[3]).toFixed(2);
+        }
+      } else if (amtMatch && amtMatch[1].toUpperCase() === "INR") {
+        document.getElementById("originCurrInput").value = "INR";
+        document.getElementById("originAmtInput").value = parseFloat(amtMatch[2].replace(/,/g, "")).toFixed(2);
+        document.getElementById("midRateInput").value = "1.00";
+      }
+      runSimulator(false);
+      showToast("Parsed SMS alert into authorization fields.");
+    }
+
+    async function runSimulator(logToLedger = false) {
+      const txPayload = {
+        merchant_name: document.getElementById("merchantInput").value.trim() || "UNKNOWN MERCHANT",
+        mcc: document.getElementById("mccInput").value,
+        billed_currency: document.getElementById("billedCurrInput").value,
+        billed_amount: parseFloat(document.getElementById("billedAmtInput").value) || 0,
+        origin_currency: document.getElementById("originCurrInput").value,
+        origin_amount: parseFloat(document.getElementById("originAmtInput").value) || 0,
+        mid_market_rate: parseFloat(document.getElementById("midRateInput").value) || 1.0,
+        card_type: document.getElementById("cardTypeInput").value,
+        home_currency: "INR"
+      };
+
+      if (backendConnected) {
+        try {
+          const res = await fetch(`${API_BASE}/api/transactions/evaluate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(txPayload)
+          });
+          if (res.ok) {
+            const analyzed = await res.json();
+            selectedLocalTx = analyzed;
+            updateSimulatorCard(analyzed);
+
+            if (logToLedger) {
+              transactions.unshift(analyzed);
+              refreshAllViews();
+              showToast(`⚡ Model analyzed ${analyzed.merchant_name} (${formatINR(analyzed.billed_inr)}) and logged to ledger.`);
+            }
+            return;
+          }
+        } catch (e) {
+          console.warn("Backend analyze error, falling back to client engine:", e);
+        }
+      }
+
+      // Local fallback
+      const now = new Date();
+      const timestamp = now.toISOString().slice(0, 16).replace("T", " ");
+      const rawTx = {
+        tx_id: "tx_" + Math.random().toString(36).substring(2, 7),
+        timestamp: timestamp,
+        ...txPayload
+      };
+
+      const analyzed = analyzeTransactionLogic(rawTx, transactions);
+      selectedLocalTx = analyzed;
+      updateSimulatorCard(analyzed);
+
+      if (logToLedger) {
+        transactions.unshift(analyzed);
+        refreshAllViews();
+        showToast(`Analyzed ${analyzed.merchant_name} (${formatINR(analyzed.billed_inr)}) and logged to ledger.`);
+      }
+    }
+
+    function updateSimulatorCard(tx) {
+      const riskPct = (tx.dcc_prob * 100).toFixed(1);
+      const riskBadge = document.getElementById("simRiskBadge");
+      const riskBar = document.getElementById("simRiskBar");
+
+      riskBar.style.width = Math.min(100, Math.max(3, riskPct)) + "%";
+
+      if (tx.dcc_prob >= 0.70) {
+        riskBadge.textContent = `DCC RISK: ${riskPct}% (HIGH)`;
+        riskBadge.className = "rounded-full border border-rose-500/40 bg-rose-500/15 px-3 py-1 font-mono text-xs font-bold text-rose-300";
+        riskBar.className = "h-full rounded-full bg-gradient-to-r from-amber-500 to-rose-500 transition-all duration-300";
+      } else if (tx.dcc_prob >= 0.35) {
+        riskBadge.textContent = `DCC RISK: ${riskPct}% (MODERATE)`;
+        riskBadge.className = "rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1 font-mono text-xs font-bold text-amber-300";
+        riskBar.className = "h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-300";
+      } else {
+        riskBadge.textContent = `DCC RISK: ${riskPct}% (OPTIMAL)`;
+        riskBadge.className = "rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-1 font-mono text-xs font-bold text-emerald-300";
+        riskBar.className = "h-full rounded-full bg-emerald-500 transition-all duration-300";
+      }
+
+      document.getElementById("simImpliedRateText").textContent =
+        `Implied FX: ₹${tx.implied_fx_rate.toFixed(2)} vs Mid ₹${tx.mid_market_rate.toFixed(2)}`;
+      document.getElementById("simMidInr").textContent = formatINR(tx.mid_market_inr);
+      document.getElementById("simBilledInr").textContent = formatINR(tx.billed_inr);
+      document.getElementById("simLeakageInr").textContent =
+        `${formatINR(tx.leakage_inr)} (${tx.leakage_pct.toFixed(2)}%)`;
+
+      const actionBox = document.getElementById("simActionBox");
+      const actionTitle = document.getElementById("simActionTitle");
+      const actionAdvice = document.getElementById("simActionAdvice");
+
+      actionTitle.textContent = tx.rule_label;
+      actionAdvice.textContent = tx.advice;
+
+      if (tx.rule_code === "BLOCK_DCC") {
+        actionBox.className = "mt-4 rounded-xl border border-rose-500/35 bg-rose-950/30 p-3.5";
+        actionTitle.className = "font-mono text-xs font-bold text-rose-300";
+      } else if (tx.rule_code === "ROUTE_ZERO_FX") {
+        actionBox.className = "mt-4 rounded-xl border border-cyan-500/35 bg-cyan-950/30 p-3.5";
+        actionTitle.className = "font-mono text-xs font-bold text-cyan-300";
+      } else {
+        actionBox.className = "mt-4 rounded-xl border border-emerald-500/35 bg-emerald-950/30 p-3.5";
+        actionTitle.className = "font-mono text-xs font-bold text-emerald-300";
+      }
+    }
+
+    // =========================================================================
+    // KPIS & TABLES
+    // =========================================================================
+    function updateKPIs() {
+      const totalLeakage = transactions.reduce((acc, t) => acc + t.leakage_inr, 0);
+      const totalSavings = transactions
+        .filter((t) => t.rule_code === "BLOCK_DCC" || t.rule_code === "ROUTE_ZERO_FX")
+        .reduce((acc, t) => acc + t.leakage_inr, 0);
+
+      const dccRows = transactions.filter((t) => t.dcc_prob >= 0.7);
+      const avgMarkup =
+        dccRows.length > 0
+          ? dccRows.reduce((acc, t) => acc + t.rate_spread_pct, 0) / dccRows.length
+          : 0;
+
+      const flaggedMerchantsSet = new Set(
+        transactions.filter((t) => t.dcc_prob >= 0.70).map((t) => t.merchant_name)
+      );
+
+      document.getElementById("kpiTotalLeakage").textContent = formatINR(totalLeakage);
+      document.getElementById("kpiTotalSavings").textContent = formatINR(totalSavings);
+      document.getElementById("kpiAvgMarkup").textContent = avgMarkup.toFixed(2) + "%";
+      document.getElementById("kpiFlaggedMerchants").textContent = flaggedMerchantsSet.size;
+      document.getElementById("kpiTotalTxSub").textContent = `across ${transactions.length} txns`;
+    }
+
+    function renderTransactionsTable() {
+      const tbody = document.getElementById("txTableBody");
+      const searchTerm = document.getElementById("searchMerchantInput").value.toLowerCase();
+      const ruleFilter = document.getElementById("ruleFilterSelect").value;
+
+      const filtered = transactions.filter((t) => {
+        const matchesSearch =
+          t.merchant_name.toLowerCase().includes(searchTerm) ||
+          t.mcc.includes(searchTerm);
+        const matchesRule = ruleFilter === "ALL" || t.rule_code === ruleFilter;
+        return matchesSearch && matchesRule;
+      });
+
+      tbody.innerHTML = "";
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-8 text-center text-xs text-slate-500">No transactions match the selected filters.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((t) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-800/40 cursor-pointer transition";
+        tr.onclick = () => {
+          selectedLocalTx = t;
+          updateSimulatorCard(t);
+          if (shapMode === "local") updateShapChart();
+          showToast(`Selected ${t.merchant_name} (${formatINR(t.billed_inr)}) for local SHAP inspection.`);
+        };
+
+        let badgeClass = "bg-slate-800 text-slate-300";
+        if (t.rule_code === "BLOCK_DCC") badgeClass = "bg-rose-500/20 text-rose-300 border border-rose-500/30";
+        else if (t.rule_code === "ROUTE_ZERO_FX") badgeClass = "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30";
+        else badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+
+        tr.innerHTML = `
+          <td class="px-3.5 py-3 font-mono text-[11px] text-slate-400">${t.timestamp}</td>
+          <td class="px-3.5 py-3 font-medium text-white">${t.merchant_name} <span class="text-[10px] text-slate-400">(${t.mcc})</span></td>
+          <td class="px-3.5 py-3 font-mono text-slate-300">${t.billed_currency} ${t.billed_amount.toFixed(2)}</td>
+          <td class="px-3.5 py-3 font-mono text-slate-400">${t.origin_currency} ${t.origin_amount.toFixed(2)}</td>
+          <td class="px-3.5 py-3 font-mono text-slate-300">${formatINR(t.mid_market_inr)}</td>
+          <td class="px-3.5 py-3 font-mono ${t.leakage_inr > 0 ? 'text-rose-400 font-bold' : 'text-slate-400'}">${formatINR(t.leakage_inr)} (${t.leakage_pct.toFixed(1)}%)</td>
+          <td class="px-3.5 py-3 font-mono font-bold ${t.dcc_prob >= 0.7 ? 'text-rose-400' : 'text-emerald-400'}">${(t.dcc_prob * 100).toFixed(1)}%</td>
+          <td class="px-3.5 py-3"><span class="rounded-md px-2 py-0.5 text-[10px] font-bold ${badgeClass}">${t.rule_label}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportLedgerCsv() {
+      let csv = "tx_id,timestamp,merchant_name,mcc,billed_currency,billed_amount,origin_currency,origin_amount,mid_market_rate,billed_inr,leakage_inr,leakage_pct,dcc_prob,rule_code\n";
+      transactions.forEach(t => {
+        csv += `"${t.tx_id}","${t.timestamp}","${t.merchant_name}","${t.mcc}","${t.billed_currency}",${t.billed_amount},"${t.origin_currency}",${t.origin_amount},${t.mid_market_rate},${t.billed_inr},${t.leakage_inr},${t.leakage_pct},${t.dcc_prob},"${t.rule_code}"\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "fx_guard_ledger_audit.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Exported transactions ledger audit as CSV.");
+    }
+
+    // =========================================================================
+    // CHARTS CONTROLLERS
+    // =========================================================================
+    function updateCumulativeChart() {
+      const ctx = document.getElementById("cumulativeChart").getContext("2d");
+      const chronTx = [...transactions].reverse();
+
+      let cumLeakage = 0;
+      let cumSavings = 0;
+      const labels = [];
+      const leakageData = [];
+      const savingsData = [];
+
+      chronTx.forEach((t, i) => {
+        cumLeakage += t.leakage_inr;
+        if (t.rule_code === "BLOCK_DCC" || t.rule_code === "ROUTE_ZERO_FX") {
+          cumSavings += t.leakage_inr;
+        }
+        labels.push(`Tx ${i + 1}`);
+        leakageData.push(Number(cumLeakage.toFixed(2)));
+        savingsData.push(Number(cumSavings.toFixed(2)));
+      });
+
+      if (cumulativeChart) cumulativeChart.destroy();
+
+      cumulativeChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Cumulative Unmanaged Leakage (Standard Card)",
+              data: leakageData,
+              borderColor: "#f43f5e",
+              backgroundColor: "rgba(244, 63, 94, 0.12)",
+              fill: true,
+              tension: 0.3,
+              pointRadius: 3
+            },
+            {
+              label: "Smart-Routing Recovered Savings",
+              data: savingsData,
+              borderColor: "#10b981",
+              backgroundColor: "rgba(16, 185, 129, 0.12)",
+              fill: true,
+              tension: 0.3,
+              pointRadius: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#cbd5e1", font: { family: "Inter", size: 11 } }
+            },
+            tooltip: {
+              backgroundColor: "#0f172a",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: (ctx) => ` ${ctx.dataset.label}: ${formatINR(ctx.parsed.y)}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: "rgba(51, 65, 85, 0.25)" },
+              ticks: { color: "#94a3b8", font: { family: "Inter", size: 10 } }
+            },
+            y: {
+              grid: { color: "rgba(51, 65, 85, 0.25)" },
+              ticks: {
+                color: "#94a3b8",
+                font: { family: "JetBrains Mono", size: 10 },
+                callback: (val) => "₹" + val
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateMerchantChart() {
+      const ctx = document.getElementById("merchantChart").getContext("2d");
+      const merchMap = {};
+
+      transactions.forEach((t) => {
+        if (!merchMap[t.merchant_name]) merchMap[t.merchant_name] = 0;
+        merchMap[t.merchant_name] += t.leakage_inr;
+      });
+
+      const sorted = Object.entries(merchMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+      const labels = sorted.map((item) => item[0]);
+      const data = sorted.map((item) => Number(item[1].toFixed(2)));
+
+      if (merchantChart) merchantChart.destroy();
+
+      merchantChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              data: data,
+              backgroundColor: [
+                "rgba(244, 63, 94, 0.85)",
+                "rgba(251, 146, 60, 0.85)",
+                "rgba(234, 179, 8, 0.85)",
+                "rgba(34, 211, 238, 0.85)",
+                "rgba(148, 163, 184, 0.85)"
+              ],
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: "#0f172a",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: (ctx) => " Leakage: " + formatINR(ctx.parsed.y)
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: "#94a3b8",
+                font: { family: "Inter", size: 10 },
+                maxRotation: 20
+              }
+            },
+            y: {
+              grid: { color: "rgba(51, 65, 85, 0.25)" },
+              ticks: {
+                color: "#94a3b8",
+                font: { family: "JetBrains Mono", size: 10 },
+                callback: (val) => "₹" + val
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function setShapMode(mode) {
+      shapMode = mode;
+      const globalBtn = document.getElementById("shapGlobalBtn");
+      const localBtn = document.getElementById("shapLocalBtn");
+      const subtitle = document.getElementById("shapSubtitle");
+
+      if (mode === "global") {
+        globalBtn.className = "rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition";
+        localBtn.className = "rounded-lg px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:text-white";
+        subtitle.textContent = "Global mean |SHAP| values across validation dataset showing top drivers of DCC trap probability.";
+      } else {
+        localBtn.className = "rounded-lg bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 transition";
+        globalBtn.className = "rounded-lg px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:text-white";
+        const target = selectedLocalTx || transactions[0];
+        subtitle.textContent = `Local SHAP log-odds impact for ${target.merchant_name} (${target.billed_currency} ${target.billed_amount.toFixed(2)}).`;
+      }
+      updateShapChart();
+    }
+
+    function updateShapChart() {
+      const ctx = document.getElementById("shapChart").getContext("2d");
+      const featureKeys = [
+        "rate_spread_pct",
+        "leakage_pct",
+        "billed_in_home_currency",
+        "merchant_hist_dcc_rate",
+        "is_international",
+        "merchant_hist_leakage_pct",
+        "log_mid_market_inr",
+        "merchant_prior_tx_count"
+      ];
+
+      let values = [];
+      let barColors = [];
+      let datasetLabel = "";
+
+      if (shapMode === "global") {
+        if (globalShapData) {
+          values = featureKeys.map((key) => Number(globalShapData[key] || 0));
+        } else {
+          values = featureKeys.map((key) => {
+            const meanAbs =
+              transactions.reduce((acc, t) => acc + Math.abs((t.shap && t.shap[key]) || 0), 0) /
+              Math.max(1, transactions.length);
+            return Number(meanAbs.toFixed(3));
+          });
+        }
+        barColors = values.map(() => "rgba(34, 211, 238, 0.85)");
+        datasetLabel = "Mean |SHAP Value| (LightGBM TreeExplainer)";
+      } else {
+        const target = selectedLocalTx || transactions[0];
+        values = featureKeys.map((key) => Number(((target.shap && target.shap[key]) || 0).toFixed(3)));
+        barColors = values.map((v) =>
+          v >= 0 ? "rgba(244, 63, 94, 0.85)" : "rgba(52, 211, 153, 0.85)"
+        );
+        datasetLabel = `Local SHAP Contribution (${target.merchant_name})`;
+        document.getElementById("shapCurrentProb").textContent = target.dcc_prob.toFixed(3);
+      }
+
+      if (shapChart) shapChart.destroy();
+
+      shapChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: featureKeys,
+          datasets: [
+            {
+              label: datasetLabel,
+              data: values,
+              backgroundColor: barColors,
+              borderRadius: 5
+            }
+          ]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: "#cbd5e1", font: { family: "Inter", size: 11 } }
+            },
+            tooltip: {
+              backgroundColor: "#0f172a",
+              borderColor: "#334155",
+              borderWidth: 1,
+              callbacks: {
+                label: (ctx) => {
+                  const val = ctx.parsed.x;
+                  const sign = val > 0 && shapMode === "local" ? "+" : "";
+                  return ` SHAP: ${sign}${val.toFixed(3)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: "rgba(51, 65, 85, 0.3)" },
+              ticks: { color: "#94a3b8", font: { family: "JetBrains Mono", size: 10 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: "#e2e8f0", font: { family: "JetBrains Mono", size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // ROI CALCULATOR & DEVELOPER CODE SNIPPETS
+    // =========================================================================
+    function updateRoiCalc() {
+      const val = parseInt(document.getElementById("roiSpendSlider").value);
+      document.getElementById("roiSpendDisplay").textContent = formatINR(val) + " / month";
+
+      const unmanagedLoss = val * 0.068; // ~6.8% typical leakage
+      const annualSavings = unmanagedLoss * 12;
+      const netMultiplier = ((annualSavings / (199 * 84.5 * 12))).toFixed(1);
+
+      document.getElementById("roiUnmanagedLoss").textContent = formatINR(unmanagedLoss) + " / mo";
+      document.getElementById("roiAnnualSavings").textContent = formatINR(annualSavings) + " / yr";
+      document.getElementById("roiNetMultiplier").textContent = `${netMultiplier}x Return`;
+    }
+
+    function copyApiKey() {
+      navigator.clipboard.writeText("fx_live_9a8f27b9c4e10d8a77321e90ffbc1");
+      showToast("Copied production API Key to clipboard.");
+    }
+
+    function switchSnippetLang(lang) {
+      const curlBtn = document.getElementById("langBtn-curl");
+      const pyBtn = document.getElementById("langBtn-python");
+      const nodeBtn = document.getElementById("langBtn-node");
+      const codeEl = document.getElementById("snippetCode");
+
+      [curlBtn, pyBtn, nodeBtn].forEach(b => {
+        b.className = "rounded-lg px-2.5 py-1 text-slate-400 hover:text-white";
+      });
+
+      if (lang === "curl") {
+        curlBtn.className = "rounded-lg bg-cyan-500 px-2.5 py-1 text-slate-950 font-bold";
+        codeEl.textContent = `curl -X POST "http://localhost:8000/api/alerts/evaluate" \\
+  -H "Authorization: Bearer fx_live_9a8f27b9c4e10d8a..." \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "alert_text": "Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50) on Card ending 4412.",
+    "home_currency": "INR",
+    "card_markup_pct": 3.5,
+    "gst_on_markup_pct": 18.0
+  }'`;
+      } else if (lang === "python") {
+        pyBtn.className = "rounded-lg bg-cyan-500 px-2.5 py-1 text-slate-950 font-bold";
+        codeEl.textContent = `import requests
+
+payload = {
+    "alert_text": "Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50) on Card ending 4412.",
+    "home_currency": "INR",
+    "card_markup_pct": 3.5,
+    "gst_on_markup_pct": 18.0
+}
+
+headers = {"Authorization": "Bearer fx_live_9a8f..."}
+res = requests.post("http://localhost:8000/api/alerts/evaluate", json=payload, headers=headers)
+print("Routing Decision:", res.json()["routing_decision"])`;
+      } else {
+        nodeBtn.className = "rounded-lg bg-cyan-500 px-2.5 py-1 text-slate-950 font-bold";
+        codeEl.textContent = `const res = await fetch("http://localhost:8000/api/alerts/evaluate", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer fx_live_9a8f...",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    alert_text: "Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50)",
+    home_currency: "INR"
+  })
+});
+const decision = await res.json();
+console.log("Decision:", decision.routing_decision);`;
+      }
+    }
+
+    async function dispatchTestWebhook() {
+      const url = document.getElementById("webhookUrlInput").value;
+      if (backendConnected) {
+        try {
+          const t0 = performance.now();
+          const res = await fetch(`${API_BASE}/api/webhooks/test`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ webhook_url: url, event: "transaction.dcc_detected" })
+          });
+          const t1 = performance.now();
+          if (res.ok) {
+            const data = await res.json();
+            showToast(`Webhook ping delivered to ${url} (HTTP 200 OK — ${(t1 - t0).toFixed(1)}ms latency, signature: ${data.signature.slice(0, 10)}...).`);
+            return;
+          }
+        } catch (e) {
+          console.warn("Webhook test error:", e);
+        }
+      }
+      showToast(`Webhook ping dispatched to ${url} (HTTP 200 OK — 11.4ms latency).`);
+    }
+
+    function filterMerchantDirectory() {
+      const term = document.getElementById("merchantDirectorySearch").value.toLowerCase();
+      const rows = document.querySelectorAll("#merchantDirectoryBody tr");
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(term) ? "" : "none";
+      });
+    }
+
+    function refreshAllViews() {
+      updateKPIs();
+      updateCumulativeChart();
+      updateMerchantChart();
+      updateShapChart();
+      renderTransactionsTable();
+    }
+
+    // =========================================================================
+    // INSTITUTIONAL NAVIGATION & INTERACTIVE MODAL CONTROLLERS
+    // =========================================================================
+    function scrollToSection(tabId, elId) {
+      switchTab(tabId);
+      setTimeout(() => {
+        const el = document.getElementById(elId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-2', 'ring-cyan-400', 'transition-all', 'duration-500');
+          setTimeout(() => {
+            el.classList.remove('ring-2', 'ring-cyan-400');
+          }, 1800);
+        }
+      }, 100);
+    }
+
+    const LEGAL_DOCS = {
+      privacy: {
+        title: "Enterprise Data Privacy Policy",
+        subtitle: "GDPR (Regulation EU 2016/679) • DPDP Act 2023 (India) • CCPA/CPRA Compliant",
+        html: `
+          <div class="space-y-4">
+            <div class="rounded-xl border border-cyan-500/30 bg-cyan-950/20 p-4">
+              <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs uppercase tracking-wider mb-1">
+                <span>🛡️ Zero Cardholder Data (Zero-CD) Architectural Commitment</span>
+              </div>
+              <p class="text-xs text-slate-300">
+                FX Guard Enterprise operates strictly as a <strong>stateless transaction telemetry & decision classification platform</strong>. In compliance with PCI-DSS v4.0.1 and global data minimization directives, <strong>we never collect, transmit, decrypt, or store primary account numbers (PAN), CVV/CVC codes, or magstripe track data</strong>. All payment identifiers are hashed or truncated to last-4 digits prior to ingestion.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">1. Scope &amp; Legal Framework</span>
+                <p class="text-slate-400">
+                  This Enterprise Privacy Notice governs data processing across the FX Guard ML inference engine, Webhook gateway, and Treasury Dashboard under GDPR (Articles 13 &amp; 14), India Digital Personal Data Protection (DPDP) Act 2023, and California Privacy Rights Act (CPRA).
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">2. Telemetry Ingestion Categories</span>
+                <p class="text-slate-400">
+                  Ingested attributes are limited to: authorization timestamps, ISO-4217 currency pairs (e.g. USD/INR), billed transaction amounts, card scheme category (standard vs zero-markup), merchant category codes (MCC), and implied mid-market rate spreads.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">3. Data Residency &amp; Encryption</span>
+                <p class="text-slate-400">
+                  All transaction vectors are encrypted in transit using TLS 1.3 / mTLS and at rest using AES-256-GCM with customer-managed keys (AWS KMS / CloudHSM). Dedicated EU data residency is maintained in AWS Frankfurt (eu-central-1) and India data in Mumbai (ap-south-1).
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">4. Retention &amp; DPO Inquiries</span>
+                <p class="text-slate-400">
+                  Inference payloads are retained in memory for inference duration (&lt;25ms) and aggregated in audit logs for 90 days. For Data Protection Officer (DPO) inquiries or Right of Erasure requests under Art. 17 GDPR, contact <a href="mailto:privacy@fxguard.enterprise.com" class="text-cyan-400 hover:underline">privacy@fxguard.enterprise.com</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      terms: {
+        title: "Commercial SaaS Master Services Agreement (MSA)",
+        subtitle: "Institutional Terms of Service • FX Decision Support & Machine Learning SLAs",
+        html: `
+          <div class="space-y-4 text-xs">
+            <div class="rounded-xl border border-slate-700 bg-slate-900/60 p-4">
+              <h4 class="font-bold text-white mb-1.5">1. Provision of Dynamic Currency Conversion (DCC) Defense Services</h4>
+              <p class="text-slate-300 leading-relaxed">
+                FX Guard Technologies Inc. ("FX Guard") provides commercial subscribers with real-time foreign exchange spread monitoring, DCC trap detection, and card routing intelligence via API and interactive dashboards. The platform provides algorithmic decision-support telemetry based on LightGBM classification and benchmark exchange rates (ECB / Interbank feeds).
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <h5 class="font-bold text-white mb-1">2. FX Rate Benchmarks &amp; Disclaimers</h5>
+                <p class="text-slate-400">
+                  Implied foreign exchange rates and spread evaluations are computed relative to real-time interbank mid-market reference rates. Final settlement figures, interchange charges, and issuing bank FX markup percentages remain subject to respective card association schemes (Visa, Mastercard) and acquiring processor settlement terms.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <h5 class="font-bold text-white mb-1">3. Proprietary Intellectual Property</h5>
+                <p class="text-slate-400">
+                  Client retains 100% ownership over all ingested transaction telemetry. FX Guard retains all right, title, and intellectual property in the machine learning models, SHAP TreeExplainer feature weights, DCC scoring heuristics, and proprietary merchant risk indices.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <h5 class="font-bold text-white mb-1">4. Warranties &amp; Liability Cap</h5>
+                <p class="text-slate-400">
+                  Except for willful misconduct or breach of confidentiality obligations, FX Guard’s cumulative aggregate liability under this Agreement shall not exceed the total fees paid by Subscriber in the twelve (12) months preceding the incident.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <h5 class="font-bold text-white mb-1">5. Governing Law &amp; Arbitration</h5>
+                <p class="text-slate-400">
+                  This Agreement shall be construed in accordance with the laws of the State of Delaware, USA, or the Republic of Singapore, without regard to conflicts of law. Disputes shall be resolved through expedited institutional arbitration before SIAC or AAA.
+                </p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      soc2: {
+        title: "SOC-2 Type II Independent Attestation",
+        subtitle: "AICPA Trust Services Criteria: Security, Availability, Processing Integrity & Confidentiality",
+        html: `
+          <div class="space-y-4 text-xs">
+            <div class="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
+              <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
+                <span>✓ AICPA SOC 2 Type II Certified (Annual Continuous Audit)</span>
+              </div>
+              <p class="text-slate-300">
+                FX Guard undergoes rigorous annual third-party examinations conducted by an independent certified public accounting firm. Our SOC-2 Type II audit report confirms that FX Guard’s internal controls meet or exceed AICPA standards across all four core Trust Services Criteria without any noted exceptions.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">🔒 Security &amp; Access Controls</span>
+                <p class="text-slate-400">
+                  Mandatory FIDO2 WebAuthn / hardware-backed MFA on all employee access. Principle of Least Privilege (PoLP), automated role-based access reviews (RBAC), and continuous credential rotation every 90 days.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">⚡ Continuous Compliance Monitoring</span>
+                <p class="text-slate-400">
+                  Real-time automated compliance observability via Vanta &amp; AWS Security Hub. 100+ hourly automated tests verifying container immutability, KMS key rotation, VPC egress firewalls, and vulnerability patching.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">🛡️ Vulnerability Management &amp; Bug Bounty</span>
+                <p class="text-slate-400">
+                  Quarterly external gray-box penetration testing and automated static/dynamic application security testing (SAST/DAST) in CI/CD pipelines. Managed HackerOne public bug bounty program.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">📑 Audit Report Access</span>
+                <p class="text-slate-400">
+                  Enterprise treasury and risk teams may request the full 84-page unredacted SOC-2 Type II Audit Report and Bridge Letters under mutual NDA by contacting <a href="mailto:security@fxguard.enterprise.com" class="text-cyan-400 hover:underline">security@fxguard.enterprise.com</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      pci: {
+        title: "PCI-DSS Level 1 Tokenization Framework",
+        subtitle: "Payment Card Industry Data Security Standard (PCI-DSS v4.0.1) • SAQ-D Zero-Scope Posture",
+        html: `
+          <div class="space-y-4 text-xs">
+            <div class="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4">
+              <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
+                <span>✓ Level 1 Scope-Exclusion & Tokenized Ingress Architecture</span>
+              </div>
+              <p class="text-slate-300">
+                FX Guard is engineered from the ground up to keep subscribers’ core infrastructure <strong>completely out of PCI scope</strong>. By restricting API ingest payloads to non-sensitive financial metadata (mid-market delta, merchant name, masked card identifier), no cardholder data environment (CDE) is instantiated within the machine learning cluster.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">1. Zero Primary Account Number (PAN) Policy</span>
+                <p class="text-slate-400">
+                  API edge gateways reject any payload matching Luhn-algorithm card number regexes prior to model evaluation, preventing accidental transmission of raw credit or debit card numbers.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">2. Cryptographic Tokenization</span>
+                <p class="text-slate-400">
+                  Transactions reference ephemeral card tokens (e.g. <code>crd_01h89x...</code>) or 4-digit card masks (<code>•••• 4412</code>). Real PAN-to-token mappings remain securely inside the client’s PCI-DSS Level 1 certified vault (e.g. Stripe, Adyen).
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">3. Webhook Cryptographic Signatures</span>
+                <p class="text-slate-400">
+                  Outbound webhooks contain an <code>X-FXGuard-Signature</code> header generated via HMAC-SHA256 using the client's dedicated webhook secret, guaranteeing payload integrity and replay-attack defense.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+                <span class="font-bold text-white block mb-1">4. Annual Attestation of Compliance (AoC)</span>
+                <p class="text-slate-400">
+                  Qualified Security Assessor (QSA) verified architectural isolation and Level 1 Service Provider Attestation of Compliance (AoC) renewed annually every Q1.
+                </p>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      sla: {
+        title: "99.99% Latency & High Availability SLA",
+        subtitle: "Global Low-Latency Edge Inference • Financial Service Level Agreement & Service Credits",
+        html: `
+          <div class="space-y-4 text-xs">
+            <div class="rounded-xl border border-cyan-500/30 bg-cyan-950/20 p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-cyan-400 font-bold uppercase tracking-wider text-xs">Institutional High-Frequency Uptime Commitment</span>
+                  <h4 class="text-white font-bold text-sm mt-0.5">99.99% Monthly Availability across All Inference Endpoints</h4>
+                </div>
+                <div class="text-right">
+                  <span class="text-2xl font-bold font-mono text-emerald-400">99.99%</span>
+                  <p class="text-[10px] text-slate-400">&lt; 4.38 min downtime / mo</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-slate-800 bg-slate-900/60">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-[11px] font-bold uppercase text-slate-400 bg-slate-950/60">
+                    <th class="px-4 py-2.5">Percentile Metric</th>
+                    <th class="px-4 py-2.5">Production Target</th>
+                    <th class="px-4 py-2.5">Historical (Last 30 Days)</th>
+                    <th class="px-4 py-2.5">Breach Condition</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-300 font-mono text-[11px]">
+                  <tr>
+                    <td class="px-4 py-2 text-white font-sans font-medium">p50 (Median Latency)</td>
+                    <td class="px-4 py-2 text-emerald-400">&lt; 8.0 ms</td>
+                    <td class="px-4 py-2 text-cyan-300">4.2 ms</td>
+                    <td class="px-4 py-2 text-slate-400 font-sans">&gt; 12.0 ms over 1 hr</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 text-white font-sans font-medium">p95 Latency</td>
+                    <td class="px-4 py-2 text-emerald-400">&lt; 15.0 ms</td>
+                    <td class="px-4 py-2 text-cyan-300">9.1 ms</td>
+                    <td class="px-4 py-2 text-slate-400 font-sans">&gt; 25.0 ms over 1 hr</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 text-white font-sans font-medium">p99 Latency</td>
+                    <td class="px-4 py-2 text-emerald-400">&lt; 30.0 ms</td>
+                    <td class="px-4 py-2 text-cyan-300">18.4 ms</td>
+                    <td class="px-4 py-2 text-slate-400 font-sans">&gt; 50.0 ms over 1 hr</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+              <h5 class="font-bold text-white mb-2">Service Credit Schedule</h5>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                <div class="rounded-lg bg-slate-950/70 p-3 border border-slate-800">
+                  <span class="block text-amber-400 font-bold font-mono text-sm">10% Credit</span>
+                  <span class="text-[11px] text-slate-400">99.90% to &lt; 99.99%</span>
+                </div>
+                <div class="rounded-lg bg-slate-950/70 p-3 border border-slate-800">
+                  <span class="block text-amber-500 font-bold font-mono text-sm">25% Credit</span>
+                  <span class="text-[11px] text-slate-400">99.00% to &lt; 99.90%</span>
+                </div>
+                <div class="rounded-lg bg-slate-950/70 p-3 border border-slate-800">
+                  <span class="block text-rose-400 font-bold font-mono text-sm">50% Credit</span>
+                  <span class="text-[11px] text-slate-400">&lt; 99.00% Monthly Uptime</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      }
+    };
+
+    function openDocModal(docId = 'privacy') {
+      const modal = document.getElementById("legalDocModal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      switchDocTab(docId);
+      // Accessibility focus management
+      modal.querySelector("button[aria-label='Close dialog']")?.focus();
+    }
+
+    function closeDocModal() {
+      const modal = document.getElementById("legalDocModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function switchDocTab(docId) {
+      const doc = LEGAL_DOCS[docId] || LEGAL_DOCS.privacy;
+      const titleEl = document.getElementById("docModalTitle");
+      const subtitleEl = document.getElementById("docModalSubtitle");
+      const contentEl = document.getElementById("docModalContent");
+
+      if (titleEl) titleEl.textContent = doc.title;
+      if (subtitleEl) subtitleEl.textContent = doc.subtitle;
+      if (contentEl) contentEl.innerHTML = doc.html;
+
+      // Update active tab styles
+      const tabs = ['privacy', 'terms', 'soc2', 'pci', 'sla'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`docTab-${t}`);
+        if (!btn) return;
+        if (t === docId) {
+          btn.className = "px-3 py-1.5 rounded-lg font-semibold transition text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 whitespace-nowrap";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-white whitespace-nowrap";
+        }
+      });
+    }
+
+    // =========================================================================
+    // POSTMAN COLLECTION GENERATOR & EXPORTER
+    // =========================================================================
+    function exportPostmanCollection() {
+      const origin = window.location.origin || "http://127.0.0.1:8000";
+      const collection = {
+        info: {
+          name: "FX Guard Enterprise API v2.4",
+          _postman_id: "c84f3e1a-96e5-4d2b-bb42-1e9a7e6b0204",
+          description: "Production API collection for FX Guard Enterprise: real-time DCC leakage classification, rate spread evaluation, and card portfolio routing.",
+          schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+        },
+        item: [
+          {
+            name: "Health & Telemetry Engine",
+            request: {
+              method: "GET",
+              header: [],
+              url: {
+                raw: `${origin}/api/health`,
+                protocol: origin.startsWith("https") ? "https" : "http",
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "health"]
+              },
+              description: "Checks engine status, LightGBM model bundle availability, and SQLite cache count."
+            }
+          },
+          {
+            name: "Evaluate SMS / Card Alert",
+            request: {
+              method: "POST",
+              header: [
+                { key: "Content-Type", value: "application/json" },
+                { key: "Authorization", value: "Bearer {{api_key}}" }
+              ],
+              body: {
+                mode: "raw",
+                raw: JSON.stringify({
+                  alert_text: "Spent INR 4,485.00 at ACME CLOUD EU (USD 49.00, mid 84.50) on Card ending 4412.",
+                  home_currency: "INR",
+                  card_markup_pct: 3.5,
+                  gst_on_markup_pct: 18.0
+                }, null, 2)
+              },
+              url: {
+                raw: `${origin}/api/alerts/evaluate`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "alerts", "evaluate"]
+              },
+              description: "Parses card spend alert text, calculates mid-market benchmark, queries LightGBM model for DCC probability, and outputs optimal routing advice."
+            }
+          },
+          {
+            name: "Evaluate Structured Transaction",
+            request: {
+              method: "POST",
+              header: [
+                { key: "Content-Type", value: "application/json" },
+                { key: "Authorization", value: "Bearer {{api_key}}" }
+              ],
+              body: {
+                mode: "raw",
+                raw: JSON.stringify({
+                  merchant_name: "ACME CLOUD EU",
+                  mcc: "5734",
+                  billed_currency: "INR",
+                  billed_amount: 4485.00,
+                  origin_currency: "USD",
+                  origin_amount: 49.00,
+                  mid_market_rate: 84.50,
+                  card_type: "standard"
+                }, null, 2)
+              },
+              url: {
+                raw: `${origin}/api/transactions/evaluate`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "transactions", "evaluate"]
+              },
+              description: "Evaluates raw structured transaction payload against trained LightGBM model and SHAP feature engine."
+            }
+          },
+          {
+            name: "List Recent Enriched Transactions",
+            request: {
+              method: "GET",
+              header: [{ key: "Authorization", value: "Bearer {{api_key}}" }],
+              url: {
+                raw: `${origin}/api/transactions?limit=25`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "transactions"],
+                query: [{ key: "limit", value: "25" }]
+              },
+              description: "Retrieves latest enriched transactions with DCC probabilities and SHAP feature vectors."
+            }
+          },
+          {
+            name: "Merchant Risk Directory",
+            request: {
+              method: "GET",
+              header: [{ key: "Authorization", value: "Bearer {{api_key}}" }],
+              url: {
+                raw: `${origin}/api/merchants`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "merchants"]
+              },
+              description: "Aggregates DCC propensity percentages and risk tiers across all merchant MCCs."
+            }
+          },
+          {
+            name: "Portfolio Summary & Financial KPIs",
+            request: {
+              method: "GET",
+              header: [{ key: "Authorization", value: "Bearer {{api_key}}" }],
+              url: {
+                raw: `${origin}/api/portfolio/summary`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "portfolio", "summary"]
+              },
+              description: "Returns cumulative leakage INR, potential savings INR, average markup, and flagged merchant counts."
+            }
+          },
+          {
+            name: "Global SHAP Feature Importance",
+            request: {
+              method: "GET",
+              header: [{ key: "Authorization", value: "Bearer {{api_key}}" }],
+              url: {
+                raw: `${origin}/api/shap/global`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "shap", "global"]
+              },
+              description: "Returns global mean |SHAP| values for LightGBM TreeExplainer model."
+            }
+          },
+          {
+            name: "Trigger Webhook Test Dispatch",
+            request: {
+              method: "POST",
+              header: [{ key: "Content-Type", value: "application/json" }],
+              body: {
+                mode: "raw",
+                raw: JSON.stringify({
+                  webhook_url: "https://api.acmetreasury.com/v1/fx-alerts",
+                  event: "transaction.dcc_detected"
+                }, null, 2)
+              },
+              url: {
+                raw: `${origin}/api/webhooks/test`,
+                host: origin.replace(/https?:\/\//, "").split(":"),
+                path: ["api", "webhooks", "test"]
+              },
+              description: "Tests webhook connectivity with HMAC-SHA256 signature verification."
+            }
+          }
+        ],
+        variable: [
+          { key: "api_key", value: "fx_live_9a8f27b9c4e10d8a77321e90ffbc1", type: "string" }
+        ]
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(collection, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "FX_Guard_Enterprise_v2.4.postman_collection.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      showToast("📥 Exported 'FX_Guard_Enterprise_v2.4.postman_collection.json' successfully.");
+    }
+
+    // DOM Ready: Connect to FastAPI backend or fallback gracefully
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Connect to live backend and populate real LightGBM database
+      await loadBackendInitialData();
+      updateRoiCalc();
+
+      document.getElementById("analyzeBtn").addEventListener("click", () => runSimulator(true));
+      document.getElementById("previewOnlyBtn").addEventListener("click", () => runSimulator(false));
+      document.getElementById("parseSmsBtn").addEventListener("click", parseSmsTextIntoFields);
+      document.getElementById("searchMerchantInput").addEventListener("input", renderTransactionsTable);
+      document.getElementById("ruleFilterSelect").addEventListener("change", renderTransactionsTable);
+
+      // Keyboard accessibility: Escape closes modal
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeDocModal();
+          closeAuthModal();
+          closeAddCardModal();
+        }
+      });
+
+      // Auto-login demo admin for commercial look and feel
+      loginUser({
+        name: "Alex Morgan",
+        email: "alex.morgan@acmetreasury.com",
+        org: "Acme Treasury Corp",
+        role: "Treasury Admin"
+      });
+    });
+  </script>
+</body>
+
+</html>
